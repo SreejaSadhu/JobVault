@@ -55,7 +55,7 @@
   "scripts": {
     "start:server": "npx nodemon src/server-side/index.js",
     "start:client": "react-scripts start",
-    "build": "react-scripts build && node scripts/replace-firebase-config.js",
+    "build": "react-scripts build",
     "start": "react-scripts start"
   },
   "browserslist": {
@@ -71,6 +71,7 @@
     ]
   },
   "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "webpack-cli": "^6.0.1"
   }
 }

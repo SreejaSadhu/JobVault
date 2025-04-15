@@ -1,9 +1,9 @@
-// This file will be processed during build to replace placeholders with actual env values
+// This file contains Firebase configuration for the service worker
 const firebaseConfig = {
-  apiKey: "__FIREBASE_API_KEY__",
-  authDomain: "__FIREBASE_AUTH_DOMAIN__",
-  projectId: "__FIREBASE_PROJECT_ID__",
-  storageBucket: "__FIREBASE_STORAGE_BUCKET__",
-  messagingSenderId: "__FIREBASE_MESSAGING_SENDER_ID__",
-  appId: "__FIREBASE_APP_ID__"
+  apiKey: "AIzaSyDUvlhvoljuRkMi6zaMYajmXBtBB7H_k2E",
+  authDomain: "jobvault-bf739.firebaseapp.com",
+  projectId: "jobvault-bf739",
+  storageBucket: "jobvault-bf739.firebasestorage.app",
+  messagingSenderId: "817627814925",
+  appId: "1:817627814925:web:c7ccff9b5cf858d5938944"
 };
