@@ -1,8 +1,14 @@
 {
-  "buildCommand": "npm run build",
+  "buildCommand": "react-scripts build",
   "outputDirectory": "build",
   "framework": "create-react-app",
   "env": {
-    "REACT_APP_BACKEND_URL": "https://your-backend-url.com"
+    "REACT_APP_BACKEND_URL": "https://your-backend-url.com",
+    "REACT_APP_FIREBASE_API_KEY": "AIzaSyDUvlhvoljuRkMi6zaMYajmXBtBB7H_k2E",
+    "REACT_APP_FIREBASE_AUTH_DOMAIN": "jobvault-bf739.firebaseapp.com",
+    "REACT_APP_FIREBASE_PROJECT_ID": "jobvault-bf739",
+    "REACT_APP_FIREBASE_STORAGE_BUCKET": "jobvault-bf739.firebasestorage.app",
+    "REACT_APP_FIREBASE_MESSAGING_SENDER_ID": "817627814925",
+    "REACT_APP_FIREBASE_APP_ID": "1:817627814925:web:c7ccff9b5cf858d5938944"
   }
 }

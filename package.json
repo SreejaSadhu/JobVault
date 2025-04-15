@@ -56,7 +56,9 @@
     "start:server": "npx nodemon src/server-side/index.js",
     "start:client": "react-scripts start",
     "build": "react-scripts build",
-    "start": "react-scripts start"
+    "start": "react-scripts start",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
   },
   "browserslist": {
     "production": [
