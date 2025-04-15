@@ -3,6 +3,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../Home-CSS/AdminNav.css';
 import axios from 'axios';
+// Import the NotificationCenter component with the .js extension
+import NotificationCenter from '../../common/NotificationCenter.js';
+
 const Navbar = () => {
   const navigate = useNavigate();
 
@@ -62,6 +65,10 @@ const Navbar = () => {
                 </li>
                 <li className="nav-item">
                   <Link className="nav-link mx-lg-2" to="/" onClick={handleLogout}>Logout</Link>
+                </li>
+                {/* Add NotificationCenter component */}
+                <li className="nav-item">
+                  <NotificationCenter />
                 </li>
                 </ul>
               </div>
