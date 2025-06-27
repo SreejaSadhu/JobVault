@@ -12,7 +12,7 @@ const PORT = process.env.PORT || 3000;
 
 // Configure CORS to allow requests from your frontend
 const corsOptions = {
-  origin: true,
+  origin: process.env.FRONTEND_URL || true, // fallback to true for development
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   credentials: true, // Allow cookies to be sent with requests
 };
@@ -29,4 +29,8 @@ mongoose.connect(process.env.MONGO_URI);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
+});
+
+app.get("/", (req, res) => {
+  res.send("JobVault backend is running!");
 });
