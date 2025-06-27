@@ -12,7 +12,7 @@ const PORT = process.env.PORT || 3000;
 
 // Configure CORS to allow requests from your frontend
 const corsOptions = {
-  origin: process.env.FRONTEND_URL || true, // fallback to true for development
+  origin: process.env.FRONTEND_URL, // fallback to true for development
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   credentials: true, // Allow cookies to be sent with requests
 };

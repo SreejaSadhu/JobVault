@@ -25,8 +25,13 @@ const HomePage = () => {
     axios
       .get(`${process.env.REACT_APP_BACKEND_URL}/auth/currentUser`)
       .then((res) => {
-        setCurrentUser(res.data.user);
-        fetchPlacementStatus(res.data.user._id);
+        if (res.data && res.data.user && res.data.user._id) {
+          setCurrentUser(res.data.user);
+          fetchPlacementStatus(res.data.user._id);
+        } else {
+          setCurrentUser(null);
+          // Optionally handle missing user (e.g., redirect or show message)
+        }
       })
       .catch((err) => {
         console.error("Error fetching current user:", err);
