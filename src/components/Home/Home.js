@@ -12,45 +12,30 @@ import Feedback from "./HomeComponents/Feedback.js";
 import Contact from "./HomeComponents/Contact.js";
 import Footer from "./HomeComponents/Footer.js";
 import "./Home-CSS/Application.css";
+
 function Home() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const companies = useSelector((state) => state.companies.companies);
 
-  const [currentUser, setCurrentUser] = useState(null);
-
   useEffect(() => {
-    axios.get(`${process.env.REACT_APP_BACKEND_URL}/auth/verify`).then((res) => {
-      if (!res.data.status) {
-        navigate("/");
-      }
-    });
-
-    axios
-      .get(`${process.env.REACT_APP_BACKEND_URL}/auth/currentUser`)
-      .then((res) => {
-        setCurrentUser(res.data.user);
-      })
-      .catch((err) => {
-        console.error("Error fetching current user:", err);
-      });
-  }, []);
-
-  console.log(currentUser);
-  useEffect(() => {
-    const fetchData = async () => {
+    // Check authentication status
+    const checkAuth = async () => {
       try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_BACKEND_URL}/auth/getCompanies`
-        );
-        dispatch(getCompanies(response.data));
-        console.log(response);
-      } catch (err) {
-        console.log(err);
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/auth/verify`);
+        if (!response.data.status) {
+          navigate("/");
+          return;
+        }
+      } catch (error) {
+        console.error("Authentication error:", error);
+        navigate("/");
+        return;
       }
     };
-    fetchData();
-  }, []);
+
+    checkAuth();
+  }, [navigate]);
 
   return (
     <div className="App">

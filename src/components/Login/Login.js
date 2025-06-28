@@ -18,20 +18,35 @@ function Login() {
     }
 
     const userData = { email, password };
+    console.log("Attempting login with:", { email });
+    
     axios
       .post(`${process.env.REACT_APP_BACKEND_URL}/auth/login`, userData)
       .then((result) => {        
-        if (result.status === 200) {
-          navigate("/home");
-        } else if (result.data === "Password Incorrect") {
-          setErrorMessage("Incorrect Password");
-        } else if (result.data === "Admin") {
-          navigate("/admin");
+        console.log("Login response:", result);
+        console.log("Response data:", result.data);
+        console.log("Response status:", result.status);
+        
+        if (result.status === 200 && result.data) {
+          if (result.data === "Invalid User") {
+            setErrorMessage("Invalid User");
+          } else if (result.data === "Password Incorrect") {
+            setErrorMessage("Incorrect Password");
+          } else if (result.data === "Admin") {
+            navigate("/admin");
+          } else {
+            // Successful login - user object returned
+            console.log("Login successful, navigating to home");
+            navigate("/home");
+          }
         } else {
-          setErrorMessage("Invalid User");
+          setErrorMessage("Login failed");
         }
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        console.error("Login error:", err);
+        setErrorMessage("Login failed. Please try again.");
+      });
   };
 
   return (

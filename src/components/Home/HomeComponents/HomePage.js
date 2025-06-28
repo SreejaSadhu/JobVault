@@ -14,29 +14,79 @@ const HomePage = () => {
 
   const [currentUser, setCurrentUser] = useState(null);
   const [placementStatus, setPlacementStatus] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    axios.get(`${process.env.REACT_APP_BACKEND_URL}/auth/verify`).then((res) => {
-      if (!res.data.status) {
-        navigate("/");
-      }
-    });
-
-    axios
-      .get(`${process.env.REACT_APP_BACKEND_URL}/auth/currentUser`)
-      .then((res) => {
-        if (res.data && res.data.user && res.data.user._id) {
-          setCurrentUser(res.data.user);
-          fetchPlacementStatus(res.data.user._id);
-        } else {
-          setCurrentUser(null);
-          // Optionally handle missing user (e.g., redirect or show message)
+    const initializeApp = async () => {
+      try {
+        setIsLoading(true);
+        
+        console.log("Starting authentication check...");
+        
+        // First test if server is reachable
+        try {
+          const testResponse = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/auth/test`);
+          console.log("Server test response:", testResponse.data);
+        } catch (testError) {
+          console.error("Server test failed:", testError);
         }
-      })
-      .catch((err) => {
-        console.error("Error fetching current user:", err);
-      });
-  }, []);
+        
+        // First verify authentication
+        const verifyResponse = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/auth/verify`);
+        console.log("Verify response:", verifyResponse.data);
+        
+        if (!verifyResponse.data.status) {
+          console.log("Authentication failed:", verifyResponse.data.message);
+          navigate("/");
+          return;
+        }
+
+        console.log("Authentication successful, fetching user data...");
+        
+        // Then get current user
+        const userResponse = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/auth/currentUser`);
+        console.log("Backend response:", userResponse.data);
+        
+        if (userResponse.data && userResponse.data.status && userResponse.data.user && userResponse.data.user._id) {
+          setCurrentUser(userResponse.data.user);
+          console.log("User data set, fetching placement status...");
+          await fetchPlacementStatus(userResponse.data.user._id);
+        } else {
+          console.log("No user data received or invalid response:", userResponse.data);
+          setCurrentUser(null);
+        }
+
+        console.log("Fetching companies...");
+        
+        // Fetch companies
+        const companiesResponse = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/auth/getCompanies`);
+        dispatch(getCompanies(companiesResponse.data));
+        
+        console.log("Initialization complete");
+        
+      } catch (error) {
+        console.error("Error during initialization:", error);
+        console.error("Error response:", error.response?.data);
+        console.error("Error status:", error.response?.status);
+        
+        if (error.response && error.response.data) {
+          const errorMessage = error.response.data.message;
+          if (errorMessage === "No Token" || errorMessage === "Token Expired" || errorMessage === "Invalid Token") {
+            console.log("Authentication error:", errorMessage, "- redirecting to login");
+            navigate("/");
+            return;
+          }
+        }
+        
+        // For other errors, show a user-friendly message
+        console.log("Other error occurred, but continuing...");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    initializeApp();
+  }, [navigate, dispatch]);
 
   const fetchPlacementStatus = async (userId) => {
     try {
@@ -44,22 +94,17 @@ const HomePage = () => {
       setPlacementStatus(response.data);
     } catch (error) {
       console.error("Error fetching placement status:", error);
+      // Don't fail the entire app if placement status fails
     }
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_BACKEND_URL}/auth/getCompanies`
-        );
-        dispatch(getCompanies(response.data));
-      } catch (err) {
-        console.log(err);
-      }
-    };
-    fetchData();
-  }, []);
+  if (isLoading) {
+    return (
+      <div className="home-container" style={{ marginTop: '100px', textAlign: 'center' }}>
+        <p>Loading...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="home-container" style={{ marginTop: '100px' }}>

@@ -1,12 +1,13 @@
 import express from "express";
 import bcrypt from "bcrypt";
-const router = express.Router();
-import { User,  } from "../models/user.js";
+import { User } from "../models/user.js";
 import { Company } from "../models/Company.js";
 import { Interview } from "../models/Experience.js";
 import { Admin } from "../models/admin.js";
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
+
+const router = express.Router();
 
 //---------------------------------------------USER ENDPOINTS--------------------------------------------------//
 
@@ -65,6 +66,8 @@ router.post("/register", async (req, res) => {
 //User and Admin Login API
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
+  console.log("Login attempt for email:", email);
+  
   const user = await User.findOne({ email });
 
   if (!user) {
@@ -78,6 +81,7 @@ router.post("/login", async (req, res) => {
     return res.json("Password Incorrect");
   }
 
+  console.log("Password valid, creating token for user:", user._id);
 
   const token = jwt.sign(
     { _id: user._id, username: user.username },
@@ -85,22 +89,44 @@ router.post("/login", async (req, res) => {
     { expiresIn: "1h" }
   );
 
-  res.cookie("token", token, { httpOnly: true, maxAge: 300000 });
+  console.log("Token created, setting cookie");
+  res.cookie("token", token, { 
+    httpOnly: true, 
+    maxAge: 3600000,
+    secure: process.env.NODE_ENV === 'production', // Only use secure in production
+    sameSite: 'lax' // Allow cross-site requests
+  });
 
+  console.log("Login successful, returning user data");
   return res.json(user);
 });
 
 // Middleware function to verify the authenticity of a user's token before granting access to protected routes.
 const verifyUser = async (req, res, next) => {
   try {
+    console.log("Verifying user token...");
+    console.log("All cookies:", req.cookies);
+    
     const token = req.cookies.token;
     if (!token) {
+      console.log("No token found in cookies");
       return res.json({ status: false, message: "No Token" });
     }
+    
+    console.log("Token found, verifying...");
     const decoded = jwt.verify(token, process.env.KEY);
+    console.log("Token verified successfully for user:", decoded._id);
+    req.user = decoded; // Add decoded user info to request
     next();
   } catch (err) {
-    return res.json(err);
+    console.error("Token verification error:", err);
+    if (err.name === 'TokenExpiredError') {
+      return res.json({ status: false, message: "Token Expired" });
+    } else if (err.name === 'JsonWebTokenError') {
+      return res.json({ status: false, message: "Invalid Token" });
+    } else {
+      return res.json({ status: false, message: "Token Verification Failed" });
+    }
   }
 };
 
@@ -114,19 +140,18 @@ router.get("/verify", verifyUser, (req, res) => {
 // It verifies the user's token and retrieves the user's information.
 router.get("/currentUser", verifyUser, async (req, res) => {
   try {
-    const token = req.cookies.token;
-    const decoded = jwt.verify(token, process.env.KEY);
-    const userId = decoded._id;
+    // User info is already verified and available from middleware
+    const userId = req.user._id;
 
     const user = await User.findById(userId);
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.json({ status: false, message: "User not found" });
     }
 
-    return res.json({ user });
+    return res.json({ status: true, user });
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Internal Server Error" });
+    console.error("Error fetching current user:", error);
+    return res.json({ status: false, message: "Error fetching user data" });
   }
 });
 
@@ -180,7 +205,7 @@ router.post("/resetPassword/:token", async (req, res) => {
     const decoded = await jwt.verify(token, process.env.KEY);
     const id = decoded.id;
 
-    const hashPassword = await bcryt.hash(password, 10);
+    const hashPassword = await bcrypt.hash(password, 10);
 
     await User.findByIdAndUpdate({ _id: id }, { password: hashPassword });
 
@@ -536,4 +561,32 @@ router.post("/updateProfile", async (req, res) => {
     return res.status(500).json({ status: false, message: `Internal Server Error: ${error.message}` });
   }
 });
+
+// Test route to check if server is working
+router.get("/test", (req, res) => {
+  console.log("Test route called");
+  console.log("Cookies received:", req.cookies);
+  res.json({ 
+    status: true, 
+    message: "Server is working", 
+    cookies: req.cookies,
+    timestamp: new Date().toISOString()
+  });
+});
+
+// Logout route to clear the authentication token
+router.post("/logout", (req, res) => {
+  try {
+    res.clearCookie("token", { 
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax'
+    });
+    return res.json({ status: true, message: "Logged out successfully" });
+  } catch (error) {
+    console.error("Logout error:", error);
+    return res.json({ status: false, message: "Error during logout" });
+  }
+});
+
 export { router as UserRouter };
