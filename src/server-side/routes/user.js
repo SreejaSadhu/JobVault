@@ -90,11 +90,11 @@ router.post("/login", async (req, res) => {
   );
 
   console.log("Token created, setting cookie");
-  res.cookie("token", token, { 
-    httpOnly: true, 
+  res.cookie("token", token, {
+    httpOnly: true,
     maxAge: 3600000,
-    secure: process.env.NODE_ENV === 'production', // Only use secure in production
-    sameSite: 'lax' // Allow cross-site requests
+    secure: true,
+    sameSite: 'none',
   });
 
   console.log("Login successful, returning user data");
@@ -580,7 +580,7 @@ router.post("/logout", (req, res) => {
     res.clearCookie("token", { 
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax'
+      sameSite: 'none'
     });
     return res.json({ status: true, message: "Logged out successfully" });
   } catch (error) {
