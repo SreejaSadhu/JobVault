@@ -97,36 +97,90 @@ adminRouter.post("/register", async (req, res) => {
 });
 
 adminRouter.post("/login", async (req, res) => {
-  const { email, password } = req.body;
-  const user = await Admin.findOne({ email });
+  try {
+    const { email, password } = req.body;
+    console.log("Admin login attempt for email:", email);
+    
+    const user = await Admin.findOne({ email });
+    console.log("Found admin user:", user ? "Yes" : "No");
 
-  if (!user) {
-    console.log("Invalid Admin User");
-    return res.status(401).json({ message: "Invalid User" });
+    if (!user) {
+      console.log("Invalid Admin User - User not found");
+      return res.status(401).json({ message: "Invalid User" });
+    }
+
+    const validPassword = await bcrypt.compare(password, user.password);
+    console.log("Password validation:", validPassword ? "Success" : "Failed");
+    
+    if (!validPassword) {
+      console.log("Password Incorrect");
+      return res.status(401).json({ message: "Password Incorrect" });
+    }
+
+    // Check if user is admin (handle both string and boolean values)
+    const isAdmin = user.isAdmin === "1" || user.isAdmin === 1 || user.isAdmin === true;
+    console.log("Is admin check:", isAdmin);
+
+    if (!isAdmin) {
+      console.log("User is not admin");
+      return res.status(403).json({ message: "Admin access required" });
+    }
+
+    const token = jwt.sign(
+      { _id: user._id, username: user.name, isAdmin: true },
+      process.env.KEY,
+      { expiresIn: "1h" }
+    );
+
+    // Set cookie with proper duration and settings
+    res.cookie("token", token, { 
+      httpOnly: true, 
+      maxAge: 3600000, // 1 hour (matches JWT expiry)
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'none'
+    });
+
+    console.log("Admin login successful for:", user.email);
+    return res.json({ 
+      message: "Admin", 
+      user: { 
+        _id: user._id, 
+        name: user.name, 
+        email: user.email,
+        isAdmin: true
+      } 
+    });
+  } catch (error) {
+    console.error("Admin login error:", error);
+    return res.status(500).json({ message: "Internal server error" });
   }
+});
 
-  const validPassword = await bcrypt.compare(password, user.password);
-  if (!validPassword) {
-    console.log("Password Incorrect");
-    return res.status(401).json({ message: "Password Incorrect" });
+// Test endpoint to create a default admin (remove this in production)
+adminRouter.post("/create-default-admin", async (req, res) => {
+  try {
+    // Check if admin already exists
+    const existingAdmin = await Admin.findOne({ email: "admin@jobvault.com" });
+    if (existingAdmin) {
+      return res.json({ message: "Default admin already exists" });
+    }
+
+    const hashpassword = await bcrypt.hash("admin123", 10);
+    const newAdmin = new Admin({
+      name: "Admin",
+      email: "admin@jobvault.com",
+      password: hashpassword,
+      isAdmin: "1",
+      adminCode: "ADMIN_SECRET"
+    });
+
+    await newAdmin.save();
+    console.log("Default admin created successfully");
+    return res.json({ message: "Default admin created successfully" });
+  } catch (error) {
+    console.error("Error creating default admin:", error);
+    return res.status(500).json({ message: "Internal server error" });
   }
-
-  const token = jwt.sign(
-    { _id: user._id, username: user.username, isAdmin: true },
-    process.env.KEY,
-    { expiresIn: "1h" }
-  );
-
-  // Set cookie with proper duration and settings
-  res.cookie("token", token, { 
-    httpOnly: true, 
-    maxAge: 3600000, // 1 hour (matches JWT expiry)
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'none'
-  });
-
-  console.log("Admin login successful for:", user.email);
-  return res.json({ message: "Admin", user: { _id: user._id, name: user.name, email: user.email } });
 });
 
 export { adminRouter };

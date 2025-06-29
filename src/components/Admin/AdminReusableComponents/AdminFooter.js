@@ -57,7 +57,7 @@ const Footer = () => {
         <div className="footer-section contact">
           <h2>Contact Us</h2>
           <div className="contact-info">
-            <div><FontAwesomeIcon icon={faEnvelope} /> sreejasadhu2006@gmail.com</div>
+            <div><FontAwesomeIcon icon={faEnvelope} /> sreejasadhu06@gmail.com</div>
             <div><FontAwesomeIcon icon={faEnvelope} /> manupalash4@gmail.com</div>
             <div><FontAwesomeIcon icon={faPhone} /> +91 8639631957</div>
             <div><FontAwesomeIcon icon={faMapMarkerAlt} /> Hyderabad, India</div>
