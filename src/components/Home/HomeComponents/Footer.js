@@ -53,7 +53,6 @@ const Footer = () => {
           <ul>
             <li>Sreeja Sadhu</li>
             <li>Y Manu Palash Reddy</li>
-            <li>K Ruthwik</li>
           </ul>
         </div>
 
@@ -62,8 +61,7 @@ const Footer = () => {
           <div className="contact-info">
             <div><FontAwesomeIcon icon={faEnvelope} /> sreejasadhu2006@gmail.com</div>
             <div><FontAwesomeIcon icon={faEnvelope} /> manupalash4@gmail.com</div>
-            <div><FontAwesomeIcon icon={faEnvelope} /> ruthwikkanuganti@gmail.com</div>
-            <div><FontAwesomeIcon icon={faPhone} /> +91 9876543210</div>
+            <div><FontAwesomeIcon icon={faPhone} /> +91 8639631957</div>
             <div><FontAwesomeIcon icon={faMapMarkerAlt} /> Hyderabad, India</div>
           </div>
         </div>

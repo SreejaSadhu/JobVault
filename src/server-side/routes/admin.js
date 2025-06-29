@@ -6,6 +6,62 @@ import jwt from "jsonwebtoken";
 
 const adminRouter = express.Router();
 
+// Admin verification middleware
+const verifyAdmin = async (req, res, next) => {
+  try {
+    console.log("Verifying admin token...");
+    console.log("All cookies:", req.cookies);
+    
+    const token = req.cookies.token;
+    if (!token) {
+      console.log("No token found in cookies");
+      return res.status(401).json({ status: false, message: "No Token" });
+    }
+    
+    console.log("Token found, verifying...");
+    const decoded = jwt.verify(token, process.env.KEY);
+    
+    // Check if user is admin
+    if (!decoded.isAdmin) {
+      console.log("User is not admin");
+      return res.status(403).json({ status: false, message: "Admin access required" });
+    }
+    
+    console.log("Admin token verified successfully for user:", decoded._id);
+    req.admin = decoded; // Add decoded admin info to request
+    next();
+  } catch (err) {
+    console.error("Admin token verification error:", err);
+    if (err.name === 'TokenExpiredError') {
+      return res.status(401).json({ status: false, message: "Token Expired" });
+    } else if (err.name === 'JsonWebTokenError') {
+      return res.status(401).json({ status: false, message: "Invalid Token" });
+    } else {
+      return res.status(401).json({ status: false, message: "Token Verification Failed" });
+    }
+  }
+};
+
+// Admin verification endpoint
+adminRouter.get("/verify", verifyAdmin, (req, res) => {
+  return res.json({ status: true, message: "Admin Authorized" });
+});
+
+// Admin current user endpoint
+adminRouter.get("/currentAdmin", verifyAdmin, async (req, res) => {
+  try {
+    const adminId = req.admin._id;
+    const admin = await Admin.findById(adminId);
+    if (!admin) {
+      return res.status(404).json({ status: false, message: "Admin not found" });
+    }
+    return res.json({ status: true, admin });
+  } catch (error) {
+    console.error("Error fetching current admin:", error);
+    return res.status(500).json({ status: false, message: "Error fetching admin data" });
+  }
+});
+
 // Admin Registration API
 adminRouter.post("/register", async (req, res) => {
   const { name, email, password, adminCode } = req.body;
@@ -45,27 +101,32 @@ adminRouter.post("/login", async (req, res) => {
   const user = await Admin.findOne({ email });
 
   if (!user) {
-    console.log("Invalid User");
-    return res.json("Invalid User");
+    console.log("Invalid Admin User");
+    return res.status(401).json({ message: "Invalid User" });
   }
 
   const validPassword = await bcrypt.compare(password, user.password);
   if (!validPassword) {
     console.log("Password Incorrect");
-    return res.json("Password Incorrect");
+    return res.status(401).json({ message: "Password Incorrect" });
   }
+
   const token = jwt.sign(
     { _id: user._id, username: user.username, isAdmin: true },
     process.env.KEY,
     { expiresIn: "1h" }
   );
 
-  res.cookie("token", token, { httpOnly: true, maxAge: 300000 });
+  // Set cookie with proper duration and settings
+  res.cookie("token", token, { 
+    httpOnly: true, 
+    maxAge: 3600000, // 1 hour (matches JWT expiry)
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'none'
+  });
 
-  if (user.isAdmin === "1") {
-    console.log("User is admin");
-    return res.json("Admin");
-  }
+  console.log("Admin login successful for:", user.email);
+  return res.json({ message: "Admin", user: { _id: user._id, name: user.name, email: user.email } });
 });
 
 export { adminRouter };

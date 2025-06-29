@@ -9,11 +9,16 @@ import Footer from "../AdminReusableComponents/AdminFooter.js";
 import AddCompany from '../Assets/AddCompany.png'
 function AddCompanies() {
   useEffect(() => {
-    axios.get(`${process.env.REACT_APP_BACKEND_URL}/auth/verify`).then((res) => {
+    axios.get(`${process.env.REACT_APP_BACKEND_URL}/admin/verify`).then((res) => {
       if (res.data.status) {
+        console.log("Admin verified successfully");
       } else {
+        console.log("Admin verification failed, redirecting to login");
         navigate("/");
       }
+    }).catch((err) => {
+      console.error("Admin verification error:", err);
+      navigate("/");
     });
   }, []);
   const [companyname, setCompanyName] = useState("");

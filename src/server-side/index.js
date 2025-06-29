@@ -12,13 +12,30 @@ const PORT = process.env.PORT || 3000;
 
 // Configure CORS to allow requests from your frontend
 const corsOptions = {
-  origin: process.env.FRONTEND_URL || "https://job-vault-bice.vercel.app",
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    const allowedOrigins = [
+      process.env.FRONTEND_URL,
+      'https://job-vault-bice.vercel.app',
+      'http://localhost:3000',
+      'http://localhost:3001'
+    ].filter(Boolean); // Remove undefined values
+    
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      console.log('CORS blocked origin:', origin);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   credentials: true, // Allow cookies to be sent with requests
   optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
 };
 
-console.log("CORS origin configured as:", corsOptions.origin);
+console.log("CORS allowed origins:", corsOptions.origin);
 app.use(cors(corsOptions));
 
 app.use(cookieParser());
@@ -80,7 +97,18 @@ app.listen(PORT, () => {
 // Keep-alive ping to prevent Render from sleeping
 setInterval(() => {
   console.log("Keep-alive ping:", new Date().toISOString());
-}, 300000); // Every 5 minutes
+}, 60000); // Every 1 minute (more frequent)
+
+// Additional ping every 30 seconds during first 5 minutes
+let startupPings = 0;
+const startupInterval = setInterval(() => {
+  if (startupPings < 10) { // First 5 minutes
+    console.log("Startup keep-alive ping:", new Date().toISOString());
+    startupPings++;
+  } else {
+    clearInterval(startupInterval);
+  }
+}, 30000); // Every 30 seconds
 
 app.get("/", (req, res) => {
   res.send("JobVault backend is running!");
