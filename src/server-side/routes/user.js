@@ -452,26 +452,40 @@ router.get("/getCompanies/:id", async (req, res) => {
 //This API fetches the users and the companies they have applied to
 router.get("/companyApplicants", async (req, res) => {
   try {
-    const companies = await Company.find(); // Assuming you have a Company model
+    // Optimized query to avoid N+1 problem
+    const companies = await Company.find().lean();
+    const companyIds = companies.map(company => company._id);
+    
+    // Single query to get all users with their applied companies
+    const users = await User.find({
+      appliedCompanies: { $in: companyIds }
+    }).select('_id name email appliedCompanies').lean();
 
-    const companyData = [];
-
-    for (const company of companies) {
-      const applicants = await User.find({ appliedCompanies: company._id });
-
-      const companyInfo = {
+    // Create a map for faster lookup
+    const companyMap = new Map();
+    companies.forEach(company => {
+      companyMap.set(company._id.toString(), {
         companyId: company._id,
         companyName: company.companyname,
-        applicants: applicants.map((applicant) => ({
-          userId: applicant._id,
-          name: applicant.name,
-          email: applicant.email,
-        })),
-      };
+        applicants: []
+      });
+    });
 
-      companyData.push(companyInfo);
-    }
+    // Group users by company
+    users.forEach(user => {
+      user.appliedCompanies.forEach(companyId => {
+        const companyKey = companyId.toString();
+        if (companyMap.has(companyKey)) {
+          companyMap.get(companyKey).applicants.push({
+            userId: user._id,
+            name: user.name,
+            email: user.email,
+          });
+        }
+      });
+    });
 
+    const companyData = Array.from(companyMap.values());
     res.json(companyData);
   } catch (error) {
     console.error("Error fetching company applicants:", error);
