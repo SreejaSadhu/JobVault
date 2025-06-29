@@ -23,9 +23,11 @@ const userSchema = new mongoose.Schema({
   appliedCompanies: [
     { type: mongoose.Schema.Types.ObjectId, ref: "companies" },
   ],
-  
-  
 });
+
+// Add only the indexes that don't already exist from unique: true
+userSchema.index({ appliedCompanies: 1 });
+userSchema.index({ placementStatus: 1 });
 
 const UserModel = mongoose.model("User", userSchema);
 export { UserModel as User };

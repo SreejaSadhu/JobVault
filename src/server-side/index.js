@@ -12,7 +12,7 @@ const PORT = process.env.PORT || 3000;
 
 // Configure CORS to allow requests from your frontend
 const corsOptions = {
-  origin: process.env.FRONTEND_URL, // fallback to localhost for development
+  origin: process.env.FRONTEND_URL || "https://job-vault-bice.vercel.app",
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   credentials: true, // Allow cookies to be sent with requests
   optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
@@ -38,13 +38,27 @@ app.use("/auth", UserRouter);
 app.use("/admin", adminRouter);
 
 // Use env variable, since mongo uri is sensitive
-mongoose.connect(process.env.MONGO_URI)
+mongoose.connect(process.env.MONGO_URI, {
+  serverSelectionTimeoutMS: 5000, // 5 second timeout
+  socketTimeoutMS: 45000, // 45 second timeout
+  bufferCommands: false // Disable mongoose buffering
+})
   .then(() => {
     console.log("Connected to MongoDB successfully");
   })
   .catch((error) => {
     console.error("MongoDB connection error:", error);
+    console.error("Please check your MONGO_URI environment variable");
   });
+
+// Handle MongoDB connection errors
+mongoose.connection.on('error', (err) => {
+  console.error('MongoDB connection error:', err);
+});
+
+mongoose.connection.on('disconnected', () => {
+  console.log('MongoDB disconnected');
+});
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
