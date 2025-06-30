@@ -28,9 +28,8 @@ router.post("/register", async (req, res) => {
     twelfthPercentage,
     twelfthCollege,
     graduationCollege,
-    graduationCGPA,
+    cgpa,
     stream,
-    sixthSemesterCGPA,
     isAdmin,
   } = req.body;
   const user = await User.findOne({ email });
@@ -53,9 +52,8 @@ router.post("/register", async (req, res) => {
     twelfthPercentage,
     twelfthCollege,
     graduationCollege,
-    graduationCGPA,
+    cgpa,
     stream,
-    sixthSemesterCGPA,
     isAdmin,
   });
 
@@ -357,8 +355,7 @@ router.post("/add-companies", async (req, res) => {
     eligibilityCriteria,
     tenthPercentage,
     twelfthPercentage,
-    graduationCGPA,
-    sixthSemesterCGPA,
+    cgpa,
   } = req.body;
 
   try {
@@ -372,8 +369,7 @@ router.post("/add-companies", async (req, res) => {
       eligibilityCriteria,
       tenthPercentage,
       twelfthPercentage,
-      graduationCGPA,
-      sixthSemesterCGPA,
+      cgpa,
     });
 
     await newCompany.save();
@@ -420,8 +416,7 @@ router.put("/updatecompany/:id", (req, res) => {
     doi: req.body.doi,
     tenthPercentage: req.body.tenthPercentage,
     twelfthPercentage: req.body.twelfthPercentage,
-    graduationCGPA: req.body.graduationCGPA,
-    sixthSemesterCGPA: req.body.sixthSemesterCGPA,
+    cgpa: req.body.cgpa,
   })
     .then((company) => res.json(company))
     .catch((err) => res.json(err));
@@ -538,7 +533,7 @@ router.post("/updateProfile", async (req, res) => {
       address,
       graduationCollege,
       stream,
-      graduationCGPA,
+      cgpa,
       graduationYear,
       skills,
       experience,
@@ -556,7 +551,7 @@ router.post("/updateProfile", async (req, res) => {
         address,
         graduationCollege,
         stream,
-        graduationCGPA,
+        cgpa,
         graduationYear,
         skills,
         experience,

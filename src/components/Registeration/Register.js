@@ -19,8 +19,7 @@ function Registration() {
   const [twelfthPercentage, setTwelfthPercentage] = useState("");
   const [twelfthCollege, setTwelfthCollege] = useState("");
   const [graduationCollege, setGraduationCollege] = useState("");
-  const [sixthSemesterCGPA, setSixthSemesterCGPA] = useState("");
-  const [graduationCGPA, setGraduationCGPA] = useState("");
+  const [cgpa, setCgpa] = useState("");
   const [stream, setStream] = useState("");
   const navigate = useNavigate();
 
@@ -57,9 +56,8 @@ function Registration() {
       !twelfthPercentage ||
       !twelfthCollege ||
       !graduationCollege ||
-      (stream === "MCA" && !graduationCGPA) ||
-      !stream ||
-      (stream !== "MCA" && !sixthSemesterCGPA)
+      !cgpa ||
+      !stream
     ) {
       alert("Please fill in all fields");
       return;
@@ -79,9 +77,7 @@ function Registration() {
       twelfthPercentage,
       twelfthCollege,
       graduationCollege,
-      graduationCGPA: stream === "MCA" ? graduationCGPA : null,
-      sixthSemesterCGPA: stream !== "MCA" ? sixthSemesterCGPA : null,
-      graduationCGPA,
+      cgpa,
       stream,
       isAdmin: null,
     };
@@ -97,8 +93,7 @@ function Registration() {
   const handleStreamChange = (e) => {
     setStream(e.target.value);
 
-    setGraduationCGPA("");
-    setSixthSemesterCGPA("");
+    setCgpa("");
   };
 
   return (
@@ -206,32 +201,6 @@ function Registration() {
             <option value="BTech-Integrated">BTech-Integrated</option>
           </select>
         </div>
-        {stream === "MCA" ? (
-          <div className="form-group">
-            <label htmlFor="graduationCGPA">Graduation CGPA</label>
-            <input
-              type="number"
-              id="graduationCGPA"
-              className="form-control"
-              placeholder="Graduation CGPA"
-              step="0.01"
-              onChange={(e) => setGraduationCGPA(e.target.value)}
-            />
-          </div>
-        ) : (
-          <div className="form-group">
-            <label htmlFor="sixthSemesterCGPA">6th Semester CGPA</label>
-            <input
-              type="number"
-              id="sixthSemesterCGPA"
-              className="form-control"
-              placeholder="6th Semester CGPA"
-              step="0.01"
-              onChange={(e) => setSixthSemesterCGPA(e.target.value)}
-            />
-          </div>
-        )}
-
         <div className="form-group">
           <label htmlFor="graduationCollege">Graduation College Name</label>
           <input
@@ -242,7 +211,16 @@ function Registration() {
             onChange={(e) => setGraduationCollege(e.target.value)}
           />
         </div>
-
+        <div className="form-group">
+          <label htmlFor="cgpa">CGPA</label>
+          <input
+            type="number"
+            step="0.01"
+            className="form-control"
+            placeholder="Overall CGPA"
+            onChange={(e) => setCgpa(e.target.value)}
+          />
+        </div>
         <div className="form-group">
           <label htmlFor="contactNumber">Contact Number</label>
           <input

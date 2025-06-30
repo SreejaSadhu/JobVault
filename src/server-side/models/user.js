@@ -14,15 +14,25 @@ const userSchema = new mongoose.Schema({
   twelfthPercentage: { type: Number, required: true },
   twelfthCollege: { type: String },
   graduationCollege: { type: String },
-  graduationCGPA: { type: Number },
+  cgpa: { type: Number, required: true },
   stream: { type: String },
-  sixthSemesterCGPA: { type: Number },
   isAdmin: { type: String },
   placementStatus: { type: String, default: null },
   companyPlaced: { type: String, default: null },
   appliedCompanies: [
     { type: mongoose.Schema.Types.ObjectId, ref: "companies" },
   ],
+  skills: [{ type: String }],
+  experience: [{
+    company: { type: String },
+    role: { type: String },
+    duration: { type: String },
+  }],
+  projects: [{
+    title: { type: String },
+    description: { type: String },
+    link: { type: String },
+  }],
 });
 
 // Add only the indexes that don't already exist from unique: true

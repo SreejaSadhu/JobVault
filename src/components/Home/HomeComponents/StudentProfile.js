@@ -38,11 +38,11 @@ const StudentProfile = () => {
           college: response.data.user?.graduationCollege || '',
           degree: response.data.user?.stream || '',
           major: response.data.user?.stream || '',
-          cgpa: response.data.user?.graduationCGPA || '',
+          cgpa: response.data.user?.cgpa || '',
           graduationYear: response.data.user?.graduationYear || '',
-          skills: response.data.user?.skills || '',
-          experience: response.data.user?.experience || '',
-          projects: response.data.user?.projects || '',
+          skills: response.data.user?.skills || [],
+          experience: response.data.user?.experience || [],
+          projects: response.data.user?.projects || [],
           linkedinUrl: response.data.user?.linkedinUrl || '' // Add LinkedIn URL field
         });
         setLoading(false);
@@ -82,7 +82,7 @@ const StudentProfile = () => {
         address: editedData.address,
         graduationCollege: editedData.college, // Changed from 'college' to 'graduationCollege'
         stream: editedData.degree, // Changed from 'degree' to 'stream'
-        graduationCGPA: editedData.cgpa, // Changed from 'cgpa' to 'graduationCGPA'
+        cgpa: editedData.cgpa, // Corrected to use cgpa
         graduationYear: editedData.graduationYear,
         skills: editedData.skills,
         experience: editedData.experience,
@@ -350,7 +350,7 @@ const StudentProfile = () => {
                     className="edit-input"
                   />
                 ) : (
-                  <span className="info-value">{profileData?.graduationCGPA || 'Not provided'}</span>
+                  <span className="info-value">{profileData?.cgpa || 'Not provided'}</span>
                 )}
               </div>
               <div className="profile-info-item">
@@ -371,51 +371,53 @@ const StudentProfile = () => {
           </div>
 
           <div className="profile-section">
-            <h2>Skills & Experience</h2>
-            <div className="profile-info-grid">
-              <div className="profile-info-item full-width">
-                <span className="info-label">Skills</span>
-                {isEditing ? (
-                  <textarea 
-                    name="skills" 
-                    value={editedData.skills} 
-                    onChange={handleInputChange} 
-                    className="edit-input"
-                    placeholder="Enter your skills separated by commas"
-                  ></textarea>
+            <h2>Skills</h2>
+            {isEditing ? (
+              <textarea
+                name="skills"
+                value={editedData.skills.join(', ')}
+                onChange={(e) => setEditedData(prev => ({ ...prev, skills: e.target.value.split(',').map(s => s.trim()) }))}
+                className="edit-textarea"
+                placeholder="Comma-separated skills"
+              />
+            ) : (
+              <ul className="skills-list">
+                {profileData?.skills?.length > 0 ? (
+                  profileData.skills.map((skill, index) => <li key={index}>{skill}</li>)
                 ) : (
-                  <span className="info-value">{profileData?.skills || 'No skills listed'}</span>
+                  <li>No skills provided</li>
                 )}
-              </div>
-              <div className="profile-info-item full-width">
-                <span className="info-label">Experience</span>
-                {isEditing ? (
-                  <textarea 
-                    name="experience" 
-                    value={editedData.experience} 
-                    onChange={handleInputChange} 
-                    className="edit-input"
-                    placeholder="Describe your work experience"
-                  ></textarea>
-                ) : (
-                  <span className="info-value">{profileData?.experience || 'No experience listed'}</span>
-                )}
-              </div>
-              <div className="profile-info-item full-width">
-                <span className="info-label">Projects</span>
-                {isEditing ? (
-                  <textarea 
-                    name="projects" 
-                    value={editedData.projects} 
-                    onChange={handleInputChange} 
-                    className="edit-input"
-                    placeholder="Describe your projects"
-                  ></textarea>
-                ) : (
-                  <span className="info-value">{profileData?.projects || 'No projects listed'}</span>
-                )}
-              </div>
-            </div>
+              </ul>
+            )}
+          </div>
+
+          <div className="profile-section">
+            <h2>Experience</h2>
+            {profileData?.experience?.length > 0 ? (
+              profileData.experience.map((exp, index) => (
+                <div key={index} className="experience-item">
+                  <h3>{exp.role} at {exp.company}</h3>
+                  <p>{exp.duration}</p>
+                </div>
+              ))
+            ) : (
+              <p>No experience listed.</p>
+            )}
+          </div>
+
+          <div className="profile-section">
+            <h2>Projects</h2>
+            {profileData?.projects?.length > 0 ? (
+              profileData.projects.map((proj, index) => (
+                <div key={index} className="project-item">
+                  <h3>{proj.title}</h3>
+                  <p>{proj.description}</p>
+                  {proj.link && <a href={proj.link} target="_blank" rel="noopener noreferrer">View Project</a>}
+                </div>
+              ))
+            ) : (
+              <p>No projects listed.</p>
+            )}
           </div>
 
           <div className="profile-actions">

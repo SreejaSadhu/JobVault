@@ -22,15 +22,20 @@ function AdminLogin() {
     axios
       .post(`${process.env.REACT_APP_BACKEND_URL}/admin/login`, userData)
       .then((result) => {        
-        if (result.data === "Password Incorrect") {
+        if (result.data.message === "Password Incorrect") {
           setErrorMessage("Incorrect Password");
-        } else if (result.data === "Admin") {
+        } else if (result.data.message === "Admin") {
           navigate("/admin");
-        } else {
+        } else if (result.data.message === "Invalid User") {
           setErrorMessage("Invalid Admin User");
+        } else {
+          setErrorMessage("Login failed. Please try again.");
         }
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        setErrorMessage("Server error. Please try again.");
+        console.log(err);
+      });
   };
 
   return (

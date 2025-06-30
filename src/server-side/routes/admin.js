@@ -156,32 +156,5 @@ adminRouter.post("/login", async (req, res) => {
   }
 });
 
-// Test endpoint to create a default admin (remove this in production)
-adminRouter.post("/create-default-admin", async (req, res) => {
-  try {
-    // Check if admin already exists
-    const existingAdmin = await Admin.findOne({ email: "admin@jobvault.com" });
-    if (existingAdmin) {
-      return res.json({ message: "Default admin already exists" });
-    }
-
-    const hashpassword = await bcrypt.hash("admin123", 10);
-    const newAdmin = new Admin({
-      name: "Admin",
-      email: "admin@jobvault.com",
-      password: hashpassword,
-      isAdmin: "1",
-      adminCode: "ADMIN_SECRET"
-    });
-
-    await newAdmin.save();
-    console.log("Default admin created successfully");
-    return res.json({ message: "Default admin created successfully" });
-  } catch (error) {
-    console.error("Error creating default admin:", error);
-    return res.status(500).json({ message: "Internal server error" });
-  }
-});
-
 export { adminRouter };
   

@@ -9,8 +9,7 @@ const CompanySchema = new mongoose.Schema({
     eligibilityCriteria: [{ type: String }],
     tenthPercentage: { type: Number, required: true },
     twelfthPercentage: { type: Number, required: true },
-    graduationCGPA: { type: Number },
-    sixthSemesterCGPA: { type: Number },
+    cgpa: { type: Number, required: true },
 });
 
 const CompanyModel = mongoose.model("Company", CompanySchema);
