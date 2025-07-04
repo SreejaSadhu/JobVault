@@ -208,7 +208,6 @@ function AdminDashboard() {
               <th>Graduation College</th>
               <th>Graduation CGPA</th>
               <th>Stream</th>
-              <th>6th Semester CGPA</th>
               <th>Placement Status</th>
               <th>Company Placed</th>
             </tr>
@@ -230,7 +229,6 @@ function AdminDashboard() {
                 <td>{user.graduationCollege}</td>
                 <td>{user.graduationCGPA}</td>
                 <td>{user.stream}</td>
-                <td>{user.sixthSemesterCGPA}</td>
                 <td>{user.placementStatus}</td>
                 <td>{user.companyPlaced}</td>
               </tr>
