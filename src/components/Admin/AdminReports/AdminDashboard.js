@@ -198,8 +198,6 @@ function AdminDashboard() {
               <th>Email</th>
               <th>Contact Number</th>
               <th>SAP ID</th>
-              <th>Roll No</th>
-
               <th>Date of Birth</th>
               <th>10th Percentage</th>
               <th>10th School</th>
@@ -219,15 +217,13 @@ function AdminDashboard() {
                 <td>{user.email}</td>
                 <td>{user.contactNumber}</td>
                 <td>{user.sapId}</td>
-                <td>{user.rollNo}</td>
-
                 <td>{user.dob}</td>
                 <td>{user.tenthPercentage}</td>
                 <td>{user.tenthSchool}</td>
                 <td>{user.twelfthPercentage}</td>
                 <td>{user.twelfthCollege}</td>
                 <td>{user.graduationCollege}</td>
-                <td>{user.graduationCGPA}</td>
+                <td>{user.cgpa}</td>
                 <td>{user.stream}</td>
                 <td>{user.placementStatus}</td>
                 <td>{user.companyPlaced}</td>

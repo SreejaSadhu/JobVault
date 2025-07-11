@@ -17,6 +17,7 @@ function Registration() {
   const [twelfthCollege, setTwelfthCollege] = useState("");
   const [cgpa, setCgpa] = useState("");
   const [stream, setStream] = useState("");
+  const [dob, setDob] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = (e) => {
@@ -49,7 +50,8 @@ function Registration() {
       !twelfthPercentage ||
       !twelfthCollege ||
       !cgpa ||
-      !stream
+      !stream ||
+      !dob
     ) {
       alert("Please fill in all fields");
       return;
@@ -67,6 +69,7 @@ function Registration() {
       twelfthCollege,
       cgpa,
       stream,
+      dob,
       isAdmin: null,
     };
     axios
@@ -225,6 +228,18 @@ function Registration() {
                 onChange={(e) => setSapId(e.target.value)}
               />
             </div>
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="dob">Date of Birth</label>
+            <input
+              type="date"
+              id="dob"
+              className="form-control"
+              value={dob}
+              onChange={(e) => setDob(e.target.value)}
+              required
+            />
           </div>
 
           <button type="submit" className="btn-primary">
