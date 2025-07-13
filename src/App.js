@@ -1,6 +1,6 @@
 // Add this import at the top of your file
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Register from "./components/Registeration/Register.js";
 import AdminRegister from "./components/Registeration/AdminRegister.js";
 import AdminLogin from "./components/Login/AdminLogin.js";
@@ -24,12 +24,14 @@ import Faqspage from "./components/Home/FAQs/FaqPage.js";
 import InterviewExperience from "./components/Home/InterviewExperiencePage/InterviewExperience.js";
 import AddExperience from "./components/Home/InterviewExperiencePage/AddExperience.js";
 import StudentProfile from './components/Home/HomeComponents/StudentProfile.js';
-import Navbar from "./components/Home/HomeComponents/Navbar.js";
 import StudentNavbar from "./components/Home/HomeComponents/Navbar.js";
 import AdminNavbar from "./components/Admin/AdminReusableComponents/AdminNav.js";
+import ViewerNavbar from "./components/Admin/AdminReusableComponents/ViewerNav.js";
 
 function AppContent() {
   const location = useLocation();
+  const [userRole, setUserRole] = useState(null);
+  
   const hideNavbarRoutes = [
     "/",
     "/admin-login",
@@ -39,21 +41,48 @@ function AppContent() {
     "/forgotpassword",
     "/resetPassword/:token"
   ];
+  
   // Check for dynamic resetPassword route
   const isResetPassword = location.pathname.startsWith("/resetPassword");
   const showNavbar = !hideNavbarRoutes.includes(location.pathname) && !isResetPassword;
 
-  // Determine user role (for demo, use localStorage; replace with real auth logic)
-  let userRole = localStorage.getItem("userRole");
-  if (!userRole) userRole = sessionStorage.getItem("userRole");
+  // Use useEffect to listen for localStorage changes
+  useEffect(() => {
+    const checkUserRole = () => {
+      const role = localStorage.getItem("userRole") || sessionStorage.getItem("userRole");
+      setUserRole(role);
+    };
 
+    // Check initially
+    checkUserRole();
+
+    // Listen for storage events (when localStorage changes in other tabs)
+    const handleStorageChange = () => {
+      checkUserRole();
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Also check periodically for changes
+    const interval = setInterval(checkUserRole, 1000);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(interval);
+    };
+  }, []);
+
+  // Determine which navbar to show
   let NavbarComponent = StudentNavbar;
-  if (userRole === "admin") NavbarComponent = AdminNavbar;
-  // ViewerNavbar is only used inline in ViewerDashboard for now
+  if (userRole === "admin") {
+    NavbarComponent = AdminNavbar;
+  } else if (userRole === "viewer") {
+    NavbarComponent = ViewerNavbar;
+  }
 
   return (
     <>
-      {showNavbar && location.pathname.startsWith("/viewerdashboard") ? null : showNavbar && <NavbarComponent />}
+      {showNavbar && <NavbarComponent />}
       <div className={showNavbar ? "main-content with-navbar" : "main-content"}>
         <Routes>
           <Route path="/" element={<LandingPage />} />

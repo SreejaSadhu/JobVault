@@ -30,6 +30,7 @@ function AdminLogin() {
         if (result.data.message === "Password Incorrect") {
           setErrorMessage("Incorrect Password");
         } else if (result.data.message === "Admin") {
+          localStorage.setItem("userRole", "admin");
           navigate("/admindashboard");
         } else if (result.data.message === "Invalid User") {
           // If admin login fails, try regular user login
@@ -51,8 +52,10 @@ function AdminLogin() {
       .then((result) => {
         // Check if user has viewer or admin role
         if (result.data.role === 'admin') {
+          localStorage.setItem("userRole", "admin");
           navigate("/admindashboard");
         } else if (result.data.role === 'viewer') {
+          localStorage.setItem("userRole", "viewer");
           navigate("/viewerdashboard");
         } else {
           setErrorMessage("Access denied. You need viewer or admin privileges.");
@@ -72,12 +75,22 @@ function AdminLogin() {
 
   const handleViewerSubmit = (e) => {
     e.preventDefault();
-    // Replace 'viewpassword' with your actual viewer password or call backend
-    if (viewerPassword === "viewpassword") {
-      navigate("/viewerdashboard");
-    } else {
-      setViewerError("Incorrect viewer password.");
-    }
+    // Use a dedicated viewer account for backend authentication
+    axios.post(`${process.env.REACT_APP_BACKEND_URL}/auth/login`, {
+      email: "viewer@jobvault.com", // Replace with your actual viewer email
+      password: viewerPassword
+    }, { withCredentials: true })
+      .then((result) => {
+        if (result.data.role === "viewer") {
+          localStorage.setItem("userRole", "viewer");
+          navigate("/viewerdashboard");
+        } else {
+          setViewerError("Incorrect viewer password.");
+        }
+      })
+      .catch(() => {
+        setViewerError("Incorrect viewer password.");
+      });
   };
 
   return (

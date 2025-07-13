@@ -100,7 +100,7 @@ const HomePage = () => {
 
   if (isLoading) {
     return (
-      <div className="home-container" style={{ marginTop: '100px', textAlign: 'center' }}>
+      <div className="home-container" style={{ textAlign: 'center' }}>
         <p>Loading...</p>
       </div>
     );
@@ -115,33 +115,29 @@ const HomePage = () => {
         <div className="home-text-section">
           {currentUser && (
             <>
-              <h1 className="primary-heading" style={{ color: "rgba(85,107,247,255)", fontSize: "80px", fontWeight: "700px" }}>
+              <h1 className="primary-heading" style={{ color: "rgba(85,107,247,255)", fontSize: "80px", fontWeight: "700" }}>
                 Welcome {currentUser.name}
               </h1>
               {placementStatus && placementStatus.status === "Placed" && (
-  <p style={{
-    fontFamily: 'Arial, sans-serif',
-    fontSize: '24px',
-    color: 'green',
-    marginTop: '20px',
-    marginLeft:'30px',
-    fontWeight: 'bold',
-   
-    cursor: 'pointer',
-    transition: 'background-color 0.3s',
-    backgroundColor: 'transparent',
-  }}
-  onMouseEnter={(e) => e.target.style.backgroundColor = 'lightgreen'}
-  onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
-  >
-    Congratulations! You are placed at {placementStatus.companyName}
-  </p>
-)}
+                <p style={{
+                  fontFamily: 'Arial, sans-serif',
+                  fontSize: '24px',
+                  color: 'green',
+                  marginLeft:'30px',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  transition: 'background-color 0.3s',
+                  backgroundColor: 'transparent',
+                }}
+                onMouseEnter={(e) => e.target.style.backgroundColor = 'lightgreen'}
+                onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+                >
+                  Congratulations! You are placed at {placementStatus.companyName}
+                </p>
+              )}
             </>
           )}
-<p className="primary-text" style={{ textAlign: 'center', marginLeft: '20px' }}>Welcome to your Placement Management System! Explore career opportunities, company profiles, and upcoming interviews. Manage your profile, upload resumes, and track application progress seamlessly.</p>
-
-           
+          <p className="primary-text" style={{ textAlign: 'center', marginLeft: '20px' }}>Welcome to your Placement Management System! Explore career opportunities, company profiles, and upcoming interviews. Manage your profile, upload resumes, and track application progress seamlessly.</p>
         </div>
         <div className="home-image-section">
           <img src={BannerImage} style={{ width: "570px", height: "550px" }} alt="Banner" />

@@ -23,6 +23,7 @@ function StudentLogin() {
       .post(`${process.env.REACT_APP_BACKEND_URL}/auth/login`, userData)
       .then((result) => {        
         if (result.status === 200) {
+          localStorage.setItem("userRole", "student");
           navigate("/home");
         } else if (result.data === "Password Incorrect") {
           setErrorMessage("Incorrect Password");

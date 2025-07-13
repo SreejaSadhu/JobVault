@@ -19,6 +19,7 @@ const corsOptions = {
     const allowedOrigins = [
       process.env.FRONTEND_URL,
       'https://job-vault-bice.vercel.app',
+      'https://job-vault-670uhbnln-sreejasadhus-projects.vercel.app',
       'http://localhost:3000',
       'http://localhost:3001'
     ].filter(Boolean); // Remove undefined values

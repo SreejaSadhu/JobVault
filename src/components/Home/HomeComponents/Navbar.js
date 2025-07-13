@@ -31,6 +31,8 @@ const StudentNavbar = () => {
     // 1. Clear client-side tokens
     localStorage.removeItem("authToken");
     sessionStorage.removeItem("authToken");
+    localStorage.removeItem("userRole");
+    sessionStorage.removeItem("userRole");
     
     // 2. Clear cookies
     document.cookie = "authToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";

@@ -10,6 +10,7 @@ function UserRoleManagement() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
+  const userRole = localStorage.getItem("userRole");
 
   useEffect(() => {
     // Verify admin access
@@ -83,37 +84,14 @@ function UserRoleManagement() {
   return (
     <>
       <AdminHome />
-      <div className="contain.er" style={{ marginTop: "150px" }}>
-        <h1 className="page-heading">User Role Management</h1>
-        
-        {message && (
-          <div style={{ 
-            backgroundColor: "#d4edda", 
-            border: "1px solid #c3e6cb", 
-            borderRadius: "5px", 
-            padding: "15px", 
-            marginBottom: "20px",
-            color: "#155724"
-          }}>
-            {message}
-          </div>
-        )}
-
-        <div style={{ 
-          backgroundColor: "#e2e3e5", 
-          border: "1px solid #d6d8db", 
-          borderRadius: "5px", 
-          padding: "15px", 
-          marginBottom: "20px"
-        }}>
-          <h4>Role Information:</h4>
-          <ul style={{ margin: "10px 0", paddingLeft: "20px" }}>
-            <li><strong>Student:</strong> Regular user with basic access</li>
-            <li><strong>Viewer:</strong> Can view admin reports and download data, but cannot make modifications</li>
-            <li><strong>Admin:</strong> Full administrative access</li>
-          </ul>
+      {userRole === 'viewer' && (
+        <div style={{ backgroundColor: '#fff3cd', border: '1px solid #ffeaa7', borderRadius: '5px', padding: '15px', marginBottom: '20px', textAlign: 'center' }}>
+          <h3 style={{ color: '#856404', margin: 0 }}>View-Only Mode - Viewer Access</h3>
+          <p style={{ color: '#856404', margin: '5px 0 0 0' }}>You can view all user roles but cannot make changes.</p>
         </div>
-
+      )}
+      <div className="admin-dashboard-container">
+        <h1 className="admin-section-title">User Roles</h1>
         <table className="user-table">
           <thead>
             <tr>
@@ -149,7 +127,7 @@ function UserRoleManagement() {
                   </span>
                 </td>
                 <td>
-                  {user.role === 'student' && (
+                  {userRole !== 'viewer' && user.role === 'student' && (
                     <button
                       onClick={() => assignViewerRole(user._id)}
                       style={{
@@ -165,7 +143,7 @@ function UserRoleManagement() {
                       Grant Viewer Access
                     </button>
                   )}
-                  {user.role === 'viewer' && (
+                  {userRole !== 'viewer' && user.role === 'viewer' && (
                     <button
                       onClick={() => removeViewerRole(user._id)}
                       style={{

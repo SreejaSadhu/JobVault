@@ -49,85 +49,79 @@ function Companycrud() {
     };
     fetchData();
   }, []);
+  const userRole = localStorage.getItem("userRole");
   return (
     <>
-    <AdminHome />
-<h2 className="header-title">Companies</h2> {/* Add custom class */}
-<div className="container-fluid h-100">
-  <div className="row h-100 justify-content-center align-items-start"> {/* Adjust align-items to start */}
-    {/* Image column */}
-    <div className="col-lg-4 d-flex justify-content-center align-items-center" style={{ height: 'fit-content' }}> {/* Change height to fit-content */}
-      <img src={interviewimg} alt="Your Image" className="img-fluid" style={{ maxWidth: '100%', maxHeight: '100%' }} />
-    </div>
-
-    {/* Table column */}
-    <div className="col-lg-8 d-flex justify-content-center align-items-center custom-border"> {/* Add custom-border class */}
-      <div className="bg-white rounded p-4">
-        <Link to="/add-companies" className="btn btn-success btn-sm mb-3 btn-add">
-          Add +
-        </Link>
-        <table className="table table-bordered table-hover">
-          {/* Table headers */}
-          <thead className="bg-purple text-white">
-            <tr>
-              <th>Name</th>
-              <th>Profile</th>
-              <th>Package</th>
-              <th>Interview Date</th>
-              <th>Branch</th>
-              <th>10th %</th>
-              <th>12th %</th>
-              <th>Graduation CGPA</th>
-              <th>6th Semester CGPA</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          
-          <tbody>
-          {companies.map((company) => {
-              return (
-                <tr>
-                  <td>{company.companyname}</td>
-                  <td>{company.jobprofile}</td>
-                  <td>{company.ctc}</td>
-                  <td>{company.doi}</td>
-                  <td>
-                    {company.eligibilityCriteria
-                      ? company.eligibilityCriteria.join(", ")
-                      : ""}
-                  </td>
-                  <td>{company.tenthPercentage}</td>
-                  <td>{company.twelfthPercentage}</td>
-                  <td>{company.graduationCGPA}</td>
-                  <td>{company.sixthSemesterCGPA}</td>
-                  <td>
-                    <Link
-                      to={`/updatecompany/${company.id}`}
-                      className="btn btn-sm btn-success"
-                    >
-                      Update
-                    </Link>
-                  </td>
-                  <td>
-                    <button
-                      onClick={() => handleDelete(company.id)}
-                      className="btn btn-sm btn-danger"
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+      {userRole === 'viewer' && (
+        <div style={{ backgroundColor: '#fff3cd', border: '1px solid #ffeaa7', borderRadius: '5px', padding: '15px', marginBottom: '20px', textAlign: 'center' }}>
+          <h3 style={{ color: '#856404', margin: 0 }}>View-Only Mode - Viewer Access</h3>
+          <p style={{ color: '#856404', margin: '5px 0 0 0' }}>You can view all companies but cannot make changes.</p>
+        </div>
+      )}
+      <AdminHome />
+      <h2 className="header-title">Companies</h2>
+      <div className="container-fluid h-100">
+        <div className="row h-100 justify-content-center align-items-start">
+          <div className="col-lg-4 d-flex justify-content-center align-items-center" style={{ height: 'fit-content' }}>
+            <img src={interviewimg} alt="Your Image" className="img-fluid" style={{ maxWidth: '100%', maxHeight: '100%' }} />
+          </div>
+          <div className="col-lg-8 d-flex justify-content-center align-items-center custom-border">
+            <div className="bg-white rounded p-4">
+              {userRole !== 'viewer' && (
+                <Link to="/add-companies" className="btn btn-success btn-sm mb-3 btn-add">
+                  Add +
+                </Link>
+              )}
+              <table className="table table-bordered">
+                <thead className="bg-purple text-white">
+                  <tr>
+                    <th>Name</th>
+                    <th>Profile</th>
+                    <th>Package</th>
+                    <th>Interview Date</th>
+                    <th>Branch</th>
+                    <th>10th %</th>
+                    <th>12th %</th>
+                    <th>Graduation CGPA</th>
+                    <th>6th Semester CGPA</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {companies.map((company) => {
+                    return (
+                      <tr key={company.id}>
+                        <td>{company.companyname}</td>
+                        <td>{company.jobprofile}</td>
+                        <td>{company.ctc}</td>
+                        <td>{company.doi}</td>
+                        <td>{company.eligibilityCriteria ? company.eligibilityCriteria.join(", ") : ""}</td>
+                        <td>{company.tenthPercentage}</td>
+                        <td>{company.twelfthPercentage}</td>
+                        <td>{company.graduationCGPA}</td>
+                        <td>{company.sixthSemesterCGPA}</td>
+                        <td>
+                          {userRole !== 'viewer' && (
+                            <>
+                              <Link to={`/updatecompany/${company.id}`} className="btn btn-sm btn-success">
+                                Update
+                              </Link>
+                              <button onClick={() => handleDelete(company.id)} className="btn btn-sm btn-danger">
+                                Delete
+                              </button>
+                            </>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-</div>
-
-<Footer />
-
+      <Footer />
     </>
   );
 }
