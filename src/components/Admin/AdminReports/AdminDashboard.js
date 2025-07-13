@@ -1,28 +1,28 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-
 import axios from "axios";
 import * as XLSX from "xlsx";
 import "../Admin-CSS/AdminDashboard.css";
-//import AdminNav from "./AdminNav.js";
 import Footer from "../AdminReusableComponents/AdminFooter.js";
 import AdminHome from "../AdminHome.js";
+import { useTable, useSortBy, usePagination, useGlobalFilter } from 'react-table';
+
+function GlobalFilter({ globalFilter, setGlobalFilter }) {
+  return (
+    <span style={{ marginRight: 10 }}>
+      Search:{" "}
+      <input
+        value={globalFilter || ""}
+        onChange={e => setGlobalFilter(e.target.value)}
+        placeholder="Type to search..."
+        style={{ fontSize: '1.1rem', padding: '2px 8px' }}
+      />
+    </span>
+  );
+}
 
 function AdminDashboard() {
   const navigate = useNavigate();
-  useEffect(() => {
-    axios.get(`${process.env.REACT_APP_BACKEND_URL}/admin/verify`).then((res) => {
-      if (res.data.status) {
-        console.log("Admin verified successfully");
-      } else {
-        console.log("Admin verification failed, redirecting to login");
-        navigate("/");
-      }
-    }).catch((err) => {
-      console.error("Admin verification error:", err);
-      navigate("/");
-    });
-  }, []);
   const [users, setUsers] = useState([]);
   const [selectedProgram, setSelectedProgram] = useState("");
   const [originalUsers, setOriginalUsers] = useState([]);
@@ -34,6 +34,12 @@ function AdminDashboard() {
     placementStatus: "",
   });
   const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    axios.get(`${process.env.REACT_APP_BACKEND_URL}/admin/verify`).then((res) => {
+      if (!res.data.status) navigate("/");
+    });
+  }, [navigate]);
 
   useEffect(() => {
     axios
@@ -85,6 +91,7 @@ function AdminDashboard() {
   const handleProgramChange = (e) => {
     setSelectedProgram(e.target.value);
   };
+
   const resetFilters = () => {
     setFilters({
       tenthPercentage: "",
@@ -98,17 +105,85 @@ function AdminDashboard() {
 
   const assignViewerRole = async (userId, userName) => {
     try {
-      const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/admin/assignViewerRole`, {
-        userId
-      });
+      await axios.post(`${process.env.REACT_APP_BACKEND_URL}/admin/assignViewerRole`, { userId });
       setMessage(`Viewer role assigned to ${userName}`);
       setTimeout(() => setMessage(""), 3000);
     } catch (error) {
-      console.error("Error assigning viewer role:", error);
       setMessage("Error assigning viewer role");
       setTimeout(() => setMessage(""), 3000);
     }
   };
+
+  // --- react-table setup ---
+  const columns = useMemo(() => [
+    { Header: 'Name', accessor: 'name' },
+    { Header: 'Email', accessor: 'email' },
+    { Header: 'Contact Number', accessor: 'contactNumber' },
+    { Header: 'SAP ID', accessor: 'sapId' },
+    { Header: 'Date of Birth', accessor: 'dob' },
+    { Header: '10th Percentage', accessor: 'tenthPercentage' },
+    { Header: '10th School', accessor: 'tenthSchool' },
+    { Header: '12th Percentage', accessor: 'twelfthPercentage' },
+    { Header: '12th College', accessor: 'twelfthCollege' },
+    { Header: 'Graduation College', accessor: 'graduationCollege' },
+    { Header: 'Graduation CGPA', accessor: 'cgpa' },
+    { Header: 'Stream', accessor: 'stream' },
+    { Header: 'Year of Graduation', accessor: 'yearOfGraduation' },
+    { Header: 'Placement Status', accessor: 'placementStatus' },
+    { Header: 'Company Placed', accessor: 'companyPlaced' },
+    {
+      Header: 'Actions',
+      id: 'actions',
+      Cell: ({ row }) => (
+        <button
+          onClick={() => assignViewerRole(row.original._id, row.original.name)}
+          style={{
+            backgroundColor: "#ffc107",
+            color: "#212529",
+            border: "none",
+            padding: "3px 8px",
+            borderRadius: "4px",
+            cursor: "pointer",
+            fontSize: "12px"
+          }}
+          title="Grant viewer access to this user"
+        >
+          Grant Viewer Access
+        </button>
+      )
+    }
+  ], []);
+
+  const data = useMemo(() => users, [users]);
+
+  const {
+    getTableProps,
+    getTableBodyProps,
+    headerGroups,
+    prepareRow,
+    page,
+    state,
+    setGlobalFilter,
+    canPreviousPage,
+    canNextPage,
+    pageOptions,
+    pageCount,
+    gotoPage,
+    nextPage,
+    previousPage,
+    setPageSize,
+  } = useTable(
+    {
+      columns,
+      data,
+      initialState: { pageIndex: 0, pageSize: 10 },
+    },
+    useGlobalFilter,
+    useSortBy,
+    usePagination
+  );
+
+  const { globalFilter, pageIndex, pageSize } = state;
 
   return (
     <>
@@ -234,67 +309,77 @@ function AdminDashboard() {
               Download
             </button>
           </div>
+          <GlobalFilter globalFilter={globalFilter} setGlobalFilter={setGlobalFilter} />
         </div>
-        <table className="user-table">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Contact Number</th>
-              <th>SAP ID</th>
-              <th>Date of Birth</th>
-              <th>10th Percentage</th>
-              <th>10th School</th>
-              <th>12th Percentage</th>
-              <th>12th College</th>
-              <th>Graduation College</th>
-              <th>Graduation CGPA</th>
-              <th>Stream</th>
-              <th>Year of Graduation</th>
-              <th>Placement Status</th>
-              <th>Company Placed</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map((user) => (
-              <tr key={user._id}>
-                <td>{user.name}</td>
-                <td>{user.email}</td>
-                <td>{user.contactNumber}</td>
-                <td>{user.sapId}</td>
-                <td>{user.dob}</td>
-                <td>{user.tenthPercentage}</td>
-                <td>{user.tenthSchool}</td>
-                <td>{user.twelfthPercentage}</td>
-                <td>{user.twelfthCollege}</td>
-                <td>{user.graduationCollege}</td>
-                <td>{user.cgpa}</td>
-                <td>{user.stream}</td>
-                <td>{user.yearOfGraduation}</td>
-                <td>{user.placementStatus}</td>
-                <td>{user.companyPlaced}</td>
-                <td>
-                  <button
-                    onClick={() => assignViewerRole(user._id, user.name)}
-                    style={{
-                      backgroundColor: "#ffc107",
-                      color: "#212529",
-                      border: "none",
-                      padding: "3px 8px",
-                      borderRadius: "4px",
-                      cursor: "pointer",
-                      fontSize: "12px"
-                    }}
-                    title="Grant viewer access to this user"
-                  >
-                    Grant Viewer Access
-                  </button>
-                </td>
-              </tr>
+        <div style={{ overflowX: 'auto', width: '100%' }}>
+          <table className="user-table" {...getTableProps()}>
+            <thead>
+              {headerGroups.map(headerGroup => (
+                <tr {...headerGroup.getHeaderGroupProps()}>
+                  {headerGroup.headers.map(column => (
+                    <th {...column.getHeaderProps(column.getSortByToggleProps())} style={{ whiteSpace: 'nowrap' }}>
+                      {column.render('Header')}
+                      <span>
+                        {column.isSorted
+                          ? column.isSortedDesc
+                            ? ' 🔽'
+                            : ' 🔼'
+                          : ''}
+                      </span>
+                    </th>
+                  ))}
+                </tr>
+              ))}
+            </thead>
+            <tbody {...getTableBodyProps()}>
+              {page.map(row => {
+                prepareRow(row);
+                return (
+                  <tr {...row.getRowProps()}>
+                    {row.cells.map(cell => (
+                      <td {...cell.getCellProps()} style={{ whiteSpace: 'nowrap' }}>{cell.render('Cell')}</td>
+                    ))}
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+        {/* Pagination Controls */}
+        <div style={{ marginTop: 10, display: 'flex', alignItems: 'center', gap: 8 }}>
+          <button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>{'<<'}</button>
+          <button onClick={() => previousPage()} disabled={!canPreviousPage}>{'<'}</button>
+          <span>
+            Page{' '}
+            <strong>
+              {pageIndex + 1} of {pageOptions.length}
+            </strong>{' '}
+          </span>
+          <button onClick={() => nextPage()} disabled={!canNextPage}>{'>'}</button>
+          <button onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>{'>>'}</button>
+          <span>
+            | Go to page:{' '}
+            <input
+              type="number"
+              defaultValue={pageIndex + 1}
+              onChange={e => {
+                const page = e.target.value ? Number(e.target.value) - 1 : 0;
+                gotoPage(page);
+              }}
+              style={{ width: '60px' }}
+            />
+          </span>
+          <select
+            value={pageSize}
+            onChange={e => setPageSize(Number(e.target.value))}
+          >
+            {[10, 20, 30, 40, 50].map(pageSize => (
+              <option key={pageSize} value={pageSize}>
+                Show {pageSize}
+              </option>
             ))}
-          </tbody>
-        </table>
+          </select>
+        </div>
       </div>
       <Footer />
     </>
