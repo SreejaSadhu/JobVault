@@ -1,6 +1,7 @@
 import express from "express";
 import bcrypt from "bcrypt";
 import { Admin } from "../models/admin.js";
+import { User } from "../models/user.js";
 import jwt from "jsonwebtoken";
 
 
@@ -152,6 +153,81 @@ adminRouter.post("/login", async (req, res) => {
     });
   } catch (error) {
     console.error("Admin login error:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+// Route to assign viewer role to a user
+adminRouter.post("/assignViewerRole", verifyAdmin, async (req, res) => {
+  try {
+    const { userId } = req.body;
+    
+    if (!userId) {
+      return res.status(400).json({ message: "User ID is required" });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    user.role = "viewer";
+    await user.save();
+
+    return res.json({ 
+      message: "Viewer role assigned successfully", 
+      user: { 
+        _id: user._id, 
+        name: user.name, 
+        email: user.email, 
+        role: user.role 
+      } 
+    });
+  } catch (error) {
+    console.error("Error assigning viewer role:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+// Route to remove viewer role from a user
+adminRouter.post("/removeViewerRole", verifyAdmin, async (req, res) => {
+  try {
+    const { userId } = req.body;
+    
+    if (!userId) {
+      return res.status(400).json({ message: "User ID is required" });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    user.role = "student";
+    await user.save();
+
+    return res.json({ 
+      message: "Viewer role removed successfully", 
+      user: { 
+        _id: user._id, 
+        name: user.name, 
+        email: user.email, 
+        role: user.role 
+      } 
+    });
+  } catch (error) {
+    console.error("Error removing viewer role:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+// Route to get all users with their roles
+adminRouter.get("/getUsersWithRoles", verifyAdmin, async (req, res) => {
+  try {
+    const users = await User.find({}, 'name email role sapId stream');
+    return res.json({ users });
+  } catch (error) {
+    console.error("Error fetching users with roles:", error);
     return res.status(500).json({ message: "Internal server error" });
   }
 });

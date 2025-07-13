@@ -1,28 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-
 import axios from "axios";
 import * as XLSX from "xlsx";
 import "../Admin-CSS/AdminDashboard.css";
-//import AdminNav from "./AdminNav.js";
 import Footer from "../AdminReusableComponents/AdminFooter.js";
 import AdminHome from "../AdminHome.js";
 
-function AdminDashboard() {
+function ViewerDashboard() {
   const navigate = useNavigate();
-  useEffect(() => {
-    axios.get(`${process.env.REACT_APP_BACKEND_URL}/admin/verify`).then((res) => {
-      if (res.data.status) {
-        console.log("Admin verified successfully");
-      } else {
-        console.log("Admin verification failed, redirecting to login");
-        navigate("/");
-      }
-    }).catch((err) => {
-      console.error("Admin verification error:", err);
-      navigate("/");
-    });
-  }, []);
   const [users, setUsers] = useState([]);
   const [selectedProgram, setSelectedProgram] = useState("");
   const [originalUsers, setOriginalUsers] = useState([]);
@@ -33,7 +18,23 @@ function AdminDashboard() {
     yearOfGraduation: "",
     placementStatus: "",
   });
-  const [message, setMessage] = useState("");
+  const [userRole, setUserRole] = useState("");
+
+  useEffect(() => {
+    // Verify viewer access
+    axios.get(`${process.env.REACT_APP_BACKEND_URL}/auth/verifyViewer`).then((res) => {
+      if (res.data.status) {
+        console.log("Viewer verified successfully");
+        setUserRole(res.data.role);
+      } else {
+        console.log("Viewer verification failed, redirecting to login");
+        navigate("/");
+      }
+    }).catch((err) => {
+      console.error("Viewer verification error:", err);
+      navigate("/");
+    });
+  }, [navigate]);
 
   useEffect(() => {
     axios
@@ -85,6 +86,7 @@ function AdminDashboard() {
   const handleProgramChange = (e) => {
     setSelectedProgram(e.target.value);
   };
+
   const resetFilters = () => {
     setFilters({
       tenthPercentage: "",
@@ -96,37 +98,27 @@ function AdminDashboard() {
     setUsers(originalUsers);
   };
 
-  const assignViewerRole = async (userId, userName) => {
-    try {
-      const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/admin/assignViewerRole`, {
-        userId
-      });
-      setMessage(`Viewer role assigned to ${userName}`);
-      setTimeout(() => setMessage(""), 3000);
-    } catch (error) {
-      console.error("Error assigning viewer role:", error);
-      setMessage("Error assigning viewer role");
-      setTimeout(() => setMessage(""), 3000);
-    }
-  };
-
   return (
     <>
       <AdminHome />
       <div className="contain.er" style={{ marginTop: "150px" }}>
-        {message && (
-          <div style={{ 
-            backgroundColor: "#d4edda", 
-            border: "1px solid #c3e6cb", 
-            borderRadius: "5px", 
-            padding: "15px", 
-            marginBottom: "20px",
-            color: "#155724"
-          }}>
-            {message}
-          </div>
-        )}
-        <h1 className="page-heading">User Reports</h1>
+        <div style={{ 
+          backgroundColor: "#fff3cd", 
+          border: "1px solid #ffeaa7", 
+          borderRadius: "5px", 
+          padding: "15px", 
+          marginBottom: "20px",
+          textAlign: "center"
+        }}>
+          <h3 style={{ color: "#856404", margin: "0" }}>
+            📊 View-Only Mode - {userRole === 'viewer' ? 'Viewer Access' : 'Admin Access'}
+          </h3>
+          <p style={{ color: "#856404", margin: "5px 0 0 0" }}>
+            You can view all data and download reports, but cannot make modifications.
+          </p>
+        </div>
+        
+        <h1 className="page-heading">User Reports (View-Only)</h1>
         <div className="filter-container">
           <div className="filter-group">
             <label htmlFor="tenthPercentage" className="filter-label">
@@ -253,7 +245,6 @@ function AdminDashboard() {
               <th>Year of Graduation</th>
               <th>Placement Status</th>
               <th>Company Placed</th>
-              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -274,23 +265,6 @@ function AdminDashboard() {
                 <td>{user.yearOfGraduation}</td>
                 <td>{user.placementStatus}</td>
                 <td>{user.companyPlaced}</td>
-                <td>
-                  <button
-                    onClick={() => assignViewerRole(user._id, user.name)}
-                    style={{
-                      backgroundColor: "#ffc107",
-                      color: "#212529",
-                      border: "none",
-                      padding: "3px 8px",
-                      borderRadius: "4px",
-                      cursor: "pointer",
-                      fontSize: "12px"
-                    }}
-                    title="Grant viewer access to this user"
-                  >
-                    Grant Viewer Access
-                  </button>
-                </td>
               </tr>
             ))}
           </tbody>
@@ -301,4 +275,4 @@ function AdminDashboard() {
   );
 }
 
-export default AdminDashboard;
+export default ViewerDashboard; 

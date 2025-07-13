@@ -18,7 +18,8 @@ const userSchema = new mongoose.Schema({
   stream: { type: String },
   yearOfGraduation: { type: Number },
   isAdmin: { type: String },
-  placementStatus: { type: String, default: null },
+  role: { type: String, enum: ['student', 'viewer', 'admin'], default: 'student' },
+  placementStatus: { type: String, default: "Unplaced" },
   companyPlaced: { type: String, default: null },
   appliedCompanies: [
     { type: mongoose.Schema.Types.ObjectId, ref: "companies" },

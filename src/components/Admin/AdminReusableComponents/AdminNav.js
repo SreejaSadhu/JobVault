@@ -34,7 +34,14 @@ function AdminNav() {
                 <li className="nav-item">
                   <Link className="nav-link mx-lg-2" to="/scheduledinterviewdata">Interview Reports</Link>
                 </li>
-
+                <li className="nav-item">
+                  <Link className="nav-link mx-lg-2" to="/userroles">User Roles</Link>
+                </li>
+                <li className="nav-item">
+                  <Link className="nav-link mx-lg-2" to="/viewerdashboard" style={{ color: "#ffc107" }}>
+                    📊 View-Only Mode
+                  </Link>
+                </li>
                 <li className="nav-item">
                   <Link className="nav-link mx-lg-2" to="/" onClick={handleLogout}>Logout</Link>
                 </li>

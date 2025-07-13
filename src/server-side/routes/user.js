@@ -84,7 +84,7 @@ router.post("/login", async (req, res) => {
   console.log("Password valid, creating token for user:", user._id);
 
   const token = jwt.sign(
-    { _id: user._id, username: user.username },
+    { _id: user._id, username: user.username, role: user.role },
     process.env.KEY,
     { expiresIn: "1h" }
   );
@@ -98,7 +98,10 @@ router.post("/login", async (req, res) => {
   });
 
   console.log("Login successful, returning user data");
-  return res.json(user);
+  return res.json({
+    ...user.toObject(),
+    role: user.role || 'student'
+  });
 });
 
 // Middleware function to verify the authenticity of a user's token before granting access to protected routes.
@@ -130,10 +133,49 @@ const verifyUser = async (req, res, next) => {
   }
 };
 
+// Middleware for view-only access (viewer role)
+const verifyViewer = async (req, res, next) => {
+  try {
+    console.log("Verifying viewer access...");
+    
+    const token = req.cookies.token;
+    if (!token) {
+      console.log("No token found in cookies");
+      return res.status(401).json({ status: false, message: "No Token" });
+    }
+    
+    const decoded = jwt.verify(token, process.env.KEY);
+    
+    // Get user from database to check role
+    const user = await User.findById(decoded._id);
+    if (!user) {
+      return res.status(404).json({ status: false, message: "User not found" });
+    }
+    
+    // Allow access if user is viewer, admin, or has admin privileges
+    if (user.role === 'viewer' || user.role === 'admin' || user.isAdmin) {
+      console.log("Viewer access granted for user:", decoded._id);
+      req.user = { ...decoded, role: user.role };
+      next();
+    } else {
+      console.log("User does not have viewer access");
+      return res.status(403).json({ status: false, message: "Viewer access required" });
+    }
+  } catch (err) {
+    console.error("Viewer verification error:", err);
+    return res.status(401).json({ status: false, message: "Token Verification Failed" });
+  }
+};
+
 // Route to verify the authenticity of a user's token.
 // It utilizes the verifyUser middleware to ensure that the user is authenticated.
 router.get("/verify", verifyUser, (req, res) => {
   return res.json({ status: true, message: "Authorized" });
+});
+
+// Route to verify viewer access (for view-only admin pages)
+router.get("/verifyViewer", verifyViewer, (req, res) => {
+  return res.json({ status: true, message: "Viewer Authorized", role: req.user.role });
 });
 
 // Route to fetch the current user's details.

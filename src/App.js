@@ -14,6 +14,8 @@ import Companycrud from "./components/Admin/Company-CRUD/Companycrud.js";
 import UpdateCompany from "./components/Admin/Company-CRUD/UpdateCompany.js";
 import ResetPassword from "./components/ForgotPassword/ResetPassword.js";
 import AdminDashboard from "./components/Admin/AdminReports/AdminDashboard.js";
+import ViewerDashboard from "./components/Admin/AdminReports/ViewerDashboard.js";
+import UserRoleManagement from "./components/Admin/AdminReports/UserRoleManagement.js";
 import Admin from "./components/Admin/Admin.js";
 import CompanyPage from "./components/Home/CompanyPages/CompanyPage.js";
 import ScheduledInterview from "./components/Home/CompanyPages/ScheduledInterview.js";
@@ -37,6 +39,8 @@ function App() {
         <Route path="/admin" element={<Admin />} />
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admindashboard" element={<AdminDashboard />} />
+        <Route path="/viewerdashboard" element={<ViewerDashboard />} />
+        <Route path="/userroles" element={<UserRoleManagement />} />
         <Route path="/add-companies" element={<AddCompanies />} />
         <Route path="/companies" element={<Companycrud />} />
         <Route path="/forgotpassword" element={<ForgetPassword />} />

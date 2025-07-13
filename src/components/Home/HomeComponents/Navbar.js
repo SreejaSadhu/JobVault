@@ -1,10 +1,31 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../Home-CSS/AdminNav.css';
 import axios from 'axios';
+
 const Navbar = () => {
   const navigate = useNavigate();
+  const [userRole, setUserRole] = useState(null);
+  const [showViewerAccess, setShowViewerAccess] = useState(false);
+
+  useEffect(() => {
+    // Check if user has viewer or admin access
+    const checkViewerAccess = async () => {
+      try {
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/auth/verifyViewer`);
+        if (response.data.status) {
+          setUserRole(response.data.role);
+          setShowViewerAccess(true);
+        }
+      } catch (error) {
+        // User doesn't have viewer access, which is fine
+        console.log("User doesn't have viewer access");
+      }
+    };
+
+    checkViewerAccess();
+  }, []);
 
   const handleLogout = () => {
     // 1. Clear client-side tokens
@@ -60,6 +81,20 @@ const Navbar = () => {
                 <li className="nav-item">
                   <Link className="nav-link mx-lg-2" to="/profile">My Profile</Link>
                 </li>
+                {showViewerAccess && (
+                  <li className="nav-item">
+                    <Link 
+                      className="nav-link mx-lg-2" 
+                      to="/viewerdashboard"
+                      style={{ 
+                        color: userRole === 'viewer' ? '#ffc107' : '#dc3545',
+                        fontWeight: 'bold'
+                      }}
+                    >
+                      {userRole === 'viewer' ? '📊 View Reports' : '📊 Admin Reports'}
+                    </Link>
+                  </li>
+                )}
                 <li className="nav-item">
                   <Link className="nav-link mx-lg-2" to="/" onClick={handleLogout}>Logout</Link>
                 </li>
