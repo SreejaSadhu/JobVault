@@ -30,7 +30,7 @@ function AdminLogin() {
         if (result.data.message === "Password Incorrect") {
           setErrorMessage("Incorrect Password");
         } else if (result.data.message === "Admin") {
-          navigate("/admin");
+          navigate("/admindashboard");
         } else if (result.data.message === "Invalid User") {
           // If admin login fails, try regular user login
           tryRegularUserLogin();
@@ -50,7 +50,9 @@ function AdminLogin() {
       .post(`${process.env.REACT_APP_BACKEND_URL}/auth/login`, userData)
       .then((result) => {
         // Check if user has viewer or admin role
-        if (result.data.role === 'viewer' || result.data.role === 'admin') {
+        if (result.data.role === 'admin') {
+          navigate("/admindashboard");
+        } else if (result.data.role === 'viewer') {
           navigate("/viewerdashboard");
         } else {
           setErrorMessage("Access denied. You need viewer or admin privileges.");
