@@ -143,7 +143,6 @@ const StudentProfile = () => {
 
   return (
     <>
-      <Navbar />
       <div className="student-profile-container">
         {successMessage && (
           <div className="success-message">

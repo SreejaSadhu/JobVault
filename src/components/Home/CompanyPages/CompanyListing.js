@@ -68,7 +68,6 @@ function CompanyListing() {
 
   return (
     <>
-      <Navbar />
       <div className="company-listing-container">
         <div className="company-listing-header">
           <h1>Ongoing Campus Placement Drives</h1>

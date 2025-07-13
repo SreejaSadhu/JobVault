@@ -88,10 +88,10 @@ function AddCompanies() {
   return (
     <>
       <AdminHome />
-      <h1 style={{ marginTop: '90px', color: 'rgba(85,107,247,255)' }}>Add Companies</h1>
+      <h1 style={{ color: 'rgba(85,107,247,255)' }}>Add Companies</h1>
       <div className="container-fluid h-100">
         <div className="row h-100 justify-content-center align-items-start">
-          <div className="col-lg-4 d-flex justify-content-center align-items-center" style={{ minHeight: '400px', marginTop: '120px' }}>
+          <div className="col-lg-4 d-flex justify-content-center align-items-center" style={{ minHeight: '400px' }}>
             <img src={AddCompany} alt="Add Company" className="img-fluid" style={{ maxWidth: '120%', maxHeight: '120%', marginLeft: '100px' }} />
           </div>
           <div className="col-lg-8 d-flex justify-content-center align-items-center custom-border">

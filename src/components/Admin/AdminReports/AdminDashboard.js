@@ -188,7 +188,7 @@ function AdminDashboard() {
   return (
     <>
       <AdminHome />
-      <div className="contain.er" style={{ marginTop: "150px" }}>
+      <div className="admin-dashboard-container">
         {message && (
           <div style={{ 
             backgroundColor: "#d4edda", 
@@ -201,8 +201,8 @@ function AdminDashboard() {
             {message}
           </div>
         )}
-        <h1 className="page-heading">User Reports</h1>
-        <div className="filter-container">
+        <h1 className="admin-section-title">User Reports</h1>
+        <div className="admin-filter-box">
           <div className="filter-group">
             <label htmlFor="tenthPercentage" className="filter-label">
               Filter by 10th Percentage:
@@ -296,22 +296,22 @@ function AdminDashboard() {
           <div className="filter-group">
             <button
               onClick={applyFilters}
-              className="filter-button button-spacing"
+              className="admin-btn admin-btn-primary button-spacing"
             >
               Apply Filters
             </button>
-            <button onClick={resetFilters} className="filter-button">
+            <button onClick={resetFilters} className="admin-btn admin-btn-secondary">
               Reset Filters
             </button>
-            <div className="filter-container"></div>
-
-            <button onClick={handleDownload} className="download-button">
+            <button onClick={handleDownload} className="admin-btn admin-btn-download">
               Download
             </button>
           </div>
-          <GlobalFilter globalFilter={globalFilter} setGlobalFilter={setGlobalFilter} />
+          <div className="admin-search-box" style={{ flex: 1, minWidth: 200 }}>
+            <GlobalFilter globalFilter={globalFilter} setGlobalFilter={setGlobalFilter} />
+          </div>
         </div>
-        <div style={{ overflowX: 'auto', width: '100%' }}>
+        <div className="admin-table-container">
           <table className="user-table" {...getTableProps()}>
             <thead>
               {headerGroups.map(headerGroup => (
@@ -346,17 +346,17 @@ function AdminDashboard() {
           </table>
         </div>
         {/* Pagination Controls */}
-        <div style={{ marginTop: 10, display: 'flex', alignItems: 'center', gap: 8 }}>
-          <button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>{'<<'}</button>
-          <button onClick={() => previousPage()} disabled={!canPreviousPage}>{'<'}</button>
+        <div className="admin-pagination">
+          <button onClick={() => gotoPage(0)} disabled={!canPreviousPage} className="admin-btn admin-btn-secondary">{'<<'}</button>
+          <button onClick={() => previousPage()} disabled={!canPreviousPage} className="admin-btn admin-btn-secondary">{'<'}</button>
           <span>
             Page{' '}
             <strong>
               {pageIndex + 1} of {pageOptions.length}
             </strong>{' '}
           </span>
-          <button onClick={() => nextPage()} disabled={!canNextPage}>{'>'}</button>
-          <button onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>{'>>'}</button>
+          <button onClick={() => nextPage()} disabled={!canNextPage} className="admin-btn admin-btn-secondary">{'>'}</button>
+          <button onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage} className="admin-btn admin-btn-secondary">{'>>'}</button>
           <span>
             | Go to page:{' '}
             <input
@@ -372,6 +372,7 @@ function AdminDashboard() {
           <select
             value={pageSize}
             onChange={e => setPageSize(Number(e.target.value))}
+            className="admin-btn admin-btn-secondary"
           >
             {[10, 20, 30, 40, 50].map(pageSize => (
               <option key={pageSize} value={pageSize}>

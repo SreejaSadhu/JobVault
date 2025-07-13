@@ -82,7 +82,7 @@ function InterviewExperience() {
     <div style={{ minHeight: '100vh', backgroundColor: '#f9f9f9' }}>
       <Navbar />
       
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '20px', paddingTop: '100px' }}>
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '20px' }}>
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}

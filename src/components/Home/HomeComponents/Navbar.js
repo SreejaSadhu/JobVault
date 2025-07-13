@@ -81,20 +81,6 @@ const Navbar = () => {
                 <li className="nav-item">
                   <Link className="nav-link mx-lg-2" to="/profile">My Profile</Link>
                 </li>
-                {showViewerAccess && (
-                  <li className="nav-item">
-                    <Link 
-                      className="nav-link mx-lg-2" 
-                      to="/viewerdashboard"
-                      style={{ 
-                        color: userRole === 'viewer' ? '#ffc107' : '#dc3545',
-                        fontWeight: 'bold'
-                      }}
-                    >
-                      {userRole === 'viewer' ? '📊 View Reports' : '📊 Admin Reports'}
-                    </Link>
-                  </li>
-                )}
                 <li className="nav-item">
                   <Link className="nav-link mx-lg-2" to="/" onClick={handleLogout}>Logout</Link>
                 </li>

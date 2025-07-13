@@ -107,8 +107,7 @@ const HomePage = () => {
   }
 
   return (
-    <div className="home-container" style={{ marginTop: '100px' }}>
-      <Navbar />
+    <div className="home-container">
       <div className="home-banner-container">
         <div className="home-bannerImage-container">
           <img src={BannerBackground} alt="" />

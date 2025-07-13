@@ -6,7 +6,7 @@ import AdminHome from "./AdminHome.js";
 const Home = () => {
   return (
 
-    <div className="home-container" style={{marginTop:'100px'}}>
+    <div className="home-container">
       <AdminHome/>
       <div className="home-banner-container">
         <div className="home-bannerImage-container">

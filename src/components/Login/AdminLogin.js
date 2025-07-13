@@ -9,6 +9,9 @@ function AdminLogin() {
   const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
   axios.defaults.withCredentials = true;
+  const [showViewerModal, setShowViewerModal] = useState(false);
+  const [viewerPassword, setViewerPassword] = useState("");
+  const [viewerError, setViewerError] = useState("");
   
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -57,6 +60,22 @@ function AdminLogin() {
         setErrorMessage("Invalid credentials or insufficient privileges.");
         console.log(err);
       });
+  };
+
+  const handleViewerAccess = () => {
+    setShowViewerModal(true);
+    setViewerPassword("");
+    setViewerError("");
+  };
+
+  const handleViewerSubmit = (e) => {
+    e.preventDefault();
+    // Replace 'viewpassword' with your actual viewer password or call backend
+    if (viewerPassword === "viewpassword") {
+      navigate("/viewerdashboard");
+    } else {
+      setViewerError("Incorrect viewer password.");
+    }
   };
 
   return (
@@ -110,6 +129,31 @@ function AdminLogin() {
           
           <button type="submit" className="login-button">Login</button>
         </form>
+        <button className="login-button" style={{ marginTop: '16px', background: '#ffc107', color: '#333' }} onClick={handleViewerAccess}>
+          View Reports
+        </button>
+        {showViewerModal && (
+          <div className="modal-overlay" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
+            <div style={{ background: '#fff', padding: '32px', borderRadius: '8px', minWidth: '320px', boxShadow: '0 4px 16px rgba(0,0,0,0.15)' }}>
+              <h2 style={{ marginBottom: '16px', color: '#5f3dc4' }}>View Reports Access</h2>
+              <form onSubmit={handleViewerSubmit}>
+                <input
+                  type="password"
+                  placeholder="Enter viewer password"
+                  value={viewerPassword}
+                  onChange={e => setViewerPassword(e.target.value)}
+                  style={{ width: '100%', padding: '10px', marginBottom: '12px', borderRadius: '4px', border: '1px solid #ccc' }}
+                  required
+                />
+                {viewerError && <div style={{ color: 'red', marginBottom: '8px' }}>{viewerError}</div>}
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
+                  <button type="button" onClick={() => setShowViewerModal(false)} style={{ background: '#eee', color: '#333', border: 'none', borderRadius: '4px', padding: '8px 16px', cursor: 'pointer' }}>Cancel</button>
+                  <button type="submit" style={{ background: '#5f3dc4', color: '#fff', border: 'none', borderRadius: '4px', padding: '8px 16px', cursor: 'pointer' }}>Submit</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
         
         <div className="login-footer">
           <button className="text-button" onClick={() => navigate("/forgotpassword")}>

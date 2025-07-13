@@ -9,7 +9,6 @@ import AdminNav from "./AdminReusableComponents/AdminNav.js";
 function Admin() {
   return (
     <>
-      <AdminNav />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
