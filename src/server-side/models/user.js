@@ -16,6 +16,7 @@ const userSchema = new mongoose.Schema({
   graduationCollege: { type: String },
   cgpa: { type: Number, required: true },
   stream: { type: String },
+  yearOfGraduation: { type: Number },
   isAdmin: { type: String },
   placementStatus: { type: String, default: null },
   companyPlaced: { type: String, default: null },

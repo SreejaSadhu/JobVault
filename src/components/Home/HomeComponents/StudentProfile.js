@@ -39,7 +39,7 @@ const StudentProfile = () => {
           degree: response.data.user?.stream || '',
           major: response.data.user?.stream || '',
           cgpa: response.data.user?.cgpa || '',
-          graduationYear: response.data.user?.graduationYear || '',
+          yearOfGraduation: response.data.user?.yearOfGraduation || '',
           skills: response.data.user?.skills || [],
           experience: response.data.user?.experience || [],
           projects: response.data.user?.projects || [],
@@ -83,7 +83,7 @@ const StudentProfile = () => {
         graduationCollege: editedData.college, // Changed from 'college' to 'graduationCollege'
         stream: editedData.degree, // Changed from 'degree' to 'stream'
         cgpa: editedData.cgpa, // Corrected to use cgpa
-        graduationYear: editedData.graduationYear,
+        yearOfGraduation: editedData.yearOfGraduation,
         skills: editedData.skills,
         experience: editedData.experience,
         projects: editedData.projects,
@@ -358,13 +358,13 @@ const StudentProfile = () => {
                 {isEditing ? (
                   <input 
                     type="number" 
-                    name="graduationYear" 
-                    value={editedData.graduationYear} 
+                    name="yearOfGraduation" 
+                    value={editedData.yearOfGraduation} 
                     onChange={handleInputChange} 
                     className="edit-input"
                   />
                 ) : (
-                  <span className="info-value">{profileData?.graduationYear || 'Not provided'}</span>
+                  <span className="info-value">{profileData?.yearOfGraduation || 'Not provided'}</span>
                 )}
               </div>
             </div>

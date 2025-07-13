@@ -30,6 +30,7 @@ router.post("/register", async (req, res) => {
     graduationCollege,
     cgpa,
     stream,
+    yearOfGraduation,
     isAdmin,
   } = req.body;
   const user = await User.findOne({ email });
@@ -54,6 +55,7 @@ router.post("/register", async (req, res) => {
     graduationCollege,
     cgpa,
     stream,
+    yearOfGraduation,
     isAdmin,
   });
 
@@ -534,7 +536,7 @@ router.post("/updateProfile", async (req, res) => {
       graduationCollege,
       stream,
       cgpa,
-      graduationYear,
+      yearOfGraduation,
       skills,
       experience,
       projects
@@ -552,7 +554,7 @@ router.post("/updateProfile", async (req, res) => {
         graduationCollege,
         stream,
         cgpa,
-        graduationYear,
+        yearOfGraduation,
         skills,
         experience,
         projects

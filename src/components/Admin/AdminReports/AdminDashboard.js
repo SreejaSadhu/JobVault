@@ -30,6 +30,7 @@ function AdminDashboard() {
     tenthPercentage: "",
     twelfthPercentage: "",
     graduationCGPA: "",
+    yearOfGraduation: "",
     placementStatus: "",
   });
 
@@ -61,6 +62,8 @@ function AdminDashboard() {
           user.twelfthPercentage >= parseFloat(filters.twelfthPercentage)) &&
         (!filters.graduationCGPA ||
           user.graduationCGPA >= parseFloat(filters.graduationCGPA)) &&
+        (!filters.yearOfGraduation ||
+          user.yearOfGraduation === parseInt(filters.yearOfGraduation)) &&
         (!selectedProgram || user.stream === selectedProgram) &&
         (!filters.placementStatus ||
           user.placementStatus === filters.placementStatus)
@@ -86,6 +89,7 @@ function AdminDashboard() {
       tenthPercentage: "",
       twelfthPercentage: "",
       graduationCGPA: "",
+      yearOfGraduation: "",
       placementStatus: "",
     });
     setUsers(originalUsers);
@@ -132,6 +136,19 @@ function AdminDashboard() {
               id="graduationCGPA"
               name="graduationCGPA"
               value={filters.graduationCGPA}
+              onChange={handleChange}
+              className="filter-input"
+            />
+          </div>
+          <div className="filter-group">
+            <label htmlFor="yearOfGraduation" className="filter-label">
+              Filter by Year of Graduation:
+            </label>
+            <input
+              type="number"
+              id="yearOfGraduation"
+              name="yearOfGraduation"
+              value={filters.yearOfGraduation}
               onChange={handleChange}
               className="filter-input"
             />
@@ -206,6 +223,7 @@ function AdminDashboard() {
               <th>Graduation College</th>
               <th>Graduation CGPA</th>
               <th>Stream</th>
+              <th>Year of Graduation</th>
               <th>Placement Status</th>
               <th>Company Placed</th>
             </tr>
@@ -225,6 +243,7 @@ function AdminDashboard() {
                 <td>{user.graduationCollege}</td>
                 <td>{user.cgpa}</td>
                 <td>{user.stream}</td>
+                <td>{user.yearOfGraduation}</td>
                 <td>{user.placementStatus}</td>
                 <td>{user.companyPlaced}</td>
               </tr>

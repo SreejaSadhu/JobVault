@@ -17,6 +17,7 @@ function Registration() {
   const [twelfthCollege, setTwelfthCollege] = useState("");
   const [cgpa, setCgpa] = useState("");
   const [stream, setStream] = useState("");
+  const [yearOfGraduation, setYearOfGraduation] = useState("");
   const [dob, setDob] = useState("");
   const navigate = useNavigate();
 
@@ -51,6 +52,7 @@ function Registration() {
       !twelfthCollege ||
       !cgpa ||
       !stream ||
+      !yearOfGraduation ||
       !dob
     ) {
       alert("Please fill in all fields");
@@ -69,6 +71,7 @@ function Registration() {
       twelfthCollege,
       cgpa,
       stream,
+      yearOfGraduation,
       dob,
       isAdmin: null,
     };
@@ -230,16 +233,29 @@ function Registration() {
             </div>
           </div>
 
-          <div className="form-group">
-            <label htmlFor="dob">Date of Birth</label>
-            <input
-              type="date"
-              id="dob"
-              className="form-control"
-              value={dob}
-              onChange={(e) => setDob(e.target.value)}
-              required
-            />
+          <div className="form-row">
+            <div className="form-group">
+              <label htmlFor="yearOfGraduation">Year of Graduation</label>
+              <input
+                type="number"
+                id="yearOfGraduation"
+                className="form-control"
+                min="2020"
+                max="2030"
+                onChange={(e) => setYearOfGraduation(e.target.value)}
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="dob">Date of Birth</label>
+              <input
+                type="date"
+                id="dob"
+                className="form-control"
+                value={dob}
+                onChange={(e) => setDob(e.target.value)}
+                required
+              />
+            </div>
           </div>
 
           <button type="submit" className="btn-primary">
@@ -248,10 +264,7 @@ function Registration() {
         </form>
         <div className="login-link">
           <p>
-            Already have an account?{" "}
-            <Link to="/" className="link">
-              Login
-            </Link>
+            Already have an account? <Link to="/">Login here</Link>
           </p>
         </div>
       </div>
