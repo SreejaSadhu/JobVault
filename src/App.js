@@ -25,6 +25,8 @@ import InterviewExperience from "./components/Home/InterviewExperiencePage/Inter
 import AddExperience from "./components/Home/InterviewExperiencePage/AddExperience.js";
 import StudentProfile from './components/Home/HomeComponents/StudentProfile.js';
 import Navbar from "./components/Home/HomeComponents/Navbar.js";
+import StudentNavbar from "./components/Home/HomeComponents/Navbar.js";
+import AdminNavbar from "./components/Admin/AdminReusableComponents/AdminNav.js";
 
 function AppContent() {
   const location = useLocation();
@@ -41,9 +43,17 @@ function AppContent() {
   const isResetPassword = location.pathname.startsWith("/resetPassword");
   const showNavbar = !hideNavbarRoutes.includes(location.pathname) && !isResetPassword;
 
+  // Determine user role (for demo, use localStorage; replace with real auth logic)
+  let userRole = localStorage.getItem("userRole");
+  if (!userRole) userRole = sessionStorage.getItem("userRole");
+
+  let NavbarComponent = StudentNavbar;
+  if (userRole === "admin") NavbarComponent = AdminNavbar;
+  // ViewerNavbar is only used inline in ViewerDashboard for now
+
   return (
     <>
-      {showNavbar && <Navbar />}
+      {showNavbar && location.pathname.startsWith("/viewerdashboard") ? null : showNavbar && <NavbarComponent />}
       <div className={showNavbar ? "main-content with-navbar" : "main-content"}>
         <Routes>
           <Route path="/" element={<LandingPage />} />

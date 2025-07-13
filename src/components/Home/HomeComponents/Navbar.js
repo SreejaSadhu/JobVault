@@ -4,7 +4,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import '../Home-CSS/AdminNav.css';
 import axios from 'axios';
 
-const Navbar = () => {
+const StudentNavbar = () => {
   const navigate = useNavigate();
   const [userRole, setUserRole] = useState(null);
   const [showViewerAccess, setShowViewerAccess] = useState(false);
@@ -99,4 +99,4 @@ const Navbar = () => {
   );
 };
 
-export default Navbar;
+export default StudentNavbar;
