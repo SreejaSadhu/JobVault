@@ -34,7 +34,8 @@ function AdminRegister() {
       });
 
       if (response.status === 200) {
-        navigate("/admin");
+        alert("Admin registered successfully! Please login with your credentials.");
+        navigate("/admin-login");
       }
     } catch (error) {
       if (error.response) {

@@ -21,19 +21,41 @@ function StudentLogin() {
     const userData = { email, password };
     axios
       .post(`${process.env.REACT_APP_BACKEND_URL}/auth/login`, userData)
-      .then((result) => {        
-        if (result.status === 200) {
-          localStorage.setItem("userRole", "student");
-          navigate("/home");
-        } else if (result.data === "Password Incorrect") {
+      .then((result) => {
+        console.log("Student login result:", result.data);
+        
+        // Backend returns strings for errors, objects for success
+        if (result.data === "Password Incorrect") {
           setErrorMessage("Incorrect Password");
-        } else if (result.data === "Admin") {
-          setErrorMessage("Please use Admin login for administrator accounts");
-        } else {
+          return;
+        }
+        
+        if (result.data === "Invalid User") {
           setErrorMessage("Invalid User");
+          return;
+        }
+        
+        // Check if login was successful (object response)
+        if (result.status === 200 && result.data && typeof result.data === 'object') {
+          const userRole = result.data.role || 'student';
+          
+          // Check if user has admin or viewer role - redirect to admin login
+          if (userRole === 'admin' || userRole === 'viewer') {
+            setErrorMessage("Please use Admin login for administrator and viewer accounts");
+            return;
+          }
+          
+          // Regular student login
+          localStorage.setItem("userRole", userRole);
+          navigate("/home");
+        } else {
+          setErrorMessage("Login failed. Please try again.");
         }
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        console.log("Login error:", err);
+        setErrorMessage("Login failed. Please try again.");
+      });
   };
 
   return (

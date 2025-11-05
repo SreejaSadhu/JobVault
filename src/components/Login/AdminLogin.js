@@ -23,47 +23,66 @@ function AdminLogin() {
 
     const userData = { email, password };
     
-    // First try admin login
+    // First try Admin table login (for registered admins)
     axios
       .post(`${process.env.REACT_APP_BACKEND_URL}/admin/login`, userData)
       .then((result) => {        
-        if (result.data.message === "Password Incorrect") {
-          setErrorMessage("Incorrect Password");
-        } else if (result.data.message === "Admin") {
+        if (result.data.message === "Admin") {
+          console.log("Admin login successful from Admin table");
           localStorage.setItem("userRole", "admin");
           navigate("/admindashboard");
-        } else if (result.data.message === "Invalid User") {
-          // If admin login fails, try regular user login
-          tryRegularUserLogin();
         } else {
           setErrorMessage("Login failed. Please try again.");
         }
       })
       .catch((err) => {
-        // If admin login fails, try regular user login
-        tryRegularUserLogin();
+        console.log("Admin table login failed, trying User table:", err.response?.data);
+        // If not in Admin table, try User table for users with admin/viewer roles
+        tryUserTableLogin();
       });
   };
 
-  const tryRegularUserLogin = () => {
+  const tryUserTableLogin = () => {
     const userData = { email, password };
     axios
       .post(`${process.env.REACT_APP_BACKEND_URL}/auth/login`, userData)
       .then((result) => {
-        // Check if user has viewer or admin role
-        if (result.data.role === 'admin') {
-          localStorage.setItem("userRole", "admin");
-          navigate("/admindashboard");
-        } else if (result.data.role === 'viewer') {
-          localStorage.setItem("userRole", "viewer");
-          navigate("/viewerdashboard");
+        console.log("User table login result:", result.data);
+        
+        // Backend returns strings for errors, objects for success
+        if (result.data === "Password Incorrect") {
+          setErrorMessage("Incorrect Password");
+          return;
+        }
+        
+        if (result.data === "Invalid User") {
+          setErrorMessage("Invalid credentials. Please check your email and password.");
+          return;
+        }
+        
+        // Check if login was successful (object response)
+        if (result.status === 200 && result.data && typeof result.data === 'object') {
+          const userRole = result.data.role || 'student';
+          
+          // Only allow admin and viewer roles
+          if (userRole === 'admin') {
+            console.log("User with admin role found in User table");
+            localStorage.setItem("userRole", "admin");
+            navigate("/admindashboard");
+          } else if (userRole === 'viewer') {
+            console.log("User with viewer role found in User table");
+            localStorage.setItem("userRole", "viewer");
+            navigate("/viewerdashboard");
+          } else {
+            setErrorMessage("Access denied. You need admin or viewer privileges.");
+          }
         } else {
-          setErrorMessage("Access denied. You need viewer or admin privileges.");
+          setErrorMessage("Invalid credentials or insufficient privileges.");
         }
       })
       .catch((err) => {
-        setErrorMessage("Invalid credentials or insufficient privileges.");
-        console.log(err);
+        console.log("User table login error:", err);
+        setErrorMessage("Invalid credentials. Please check your email and password.");
       });
   };
 
@@ -81,11 +100,19 @@ function AdminLogin() {
       password: viewerPassword
     }, { withCredentials: true })
       .then((result) => {
-        if (result.data.role === "viewer") {
+        // Check for string error responses first
+        if (result.data === "Password Incorrect" || result.data === "Invalid User") {
+          setViewerError("Incorrect viewer password.");
+          return;
+        }
+        
+        // Check object response
+        if (result.data && typeof result.data === 'object' && result.data.role === "viewer") {
           localStorage.setItem("userRole", "viewer");
+          setShowViewerModal(false);
           navigate("/viewerdashboard");
         } else {
-          setViewerError("Incorrect viewer password.");
+          setViewerError("Incorrect viewer password or insufficient privileges.");
         }
       })
       .catch(() => {

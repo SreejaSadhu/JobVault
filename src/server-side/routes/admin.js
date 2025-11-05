@@ -137,7 +137,7 @@ adminRouter.post("/login", async (req, res) => {
     res.cookie("token", token, { 
       httpOnly: true, 
       maxAge: 3600000, // 1 hour (matches JWT expiry)
-      secure: process.env.NODE_ENV === 'production',
+      secure: true, // Always use secure for cross-origin requests
       sameSite: 'none'
     });
 
